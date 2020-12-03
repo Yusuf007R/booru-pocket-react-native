@@ -26,6 +26,10 @@ export default function ImageScreen({navigation, route}) {
   //     };
   return (
     <ImageZoom
+      longPressTime={1500}
+      onLongPress={() => {
+        alert('xd');
+      }}
       style={{
         flex: 1,
         backgroundColor: 'black',

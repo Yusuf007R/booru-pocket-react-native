@@ -4,38 +4,53 @@ import {fetchImage} from '../services/fetchImage';
 export const useGetImages = () => {
   const [data, setData] = useState([]);
   const [states, setStates] = useState({
-    limit: 50,
-    page: 1,
+    params: {
+      limit: 50,
+      page: 1,
+    },
+    tags: [],
     loading: false,
     refreshing: false,
   });
 
-  const getImage = async (refresh) => {
-    console.log(['hook', states]);
-    // if (states.loading) {
-    //   return;
-    // }
-    // setStates((prev) => ({...prev, loading: true}));
-    if (refresh) {
-      setStates((prev) => ({...prev, page: 1, refreshing: true}));
+  const getMoreData = async () => {
+    if (states.loading) {
+      return;
     }
+    const {page, limit} = states.params;
+    setStates((prev) => ({...prev, loading: true}));
     try {
-      const result = await fetchImage(states);
-      if (states.page === 1) {
-        setStates((prev) => ({...prev, page: prev.page + 1}));
-        return setData(result);
-      }
+      const result = await fetchImage({page, limit});
+      setData((prevData) => [...prevData, ...result]);
       setStates((prev) => ({
         ...prev,
-        // loading: !prev.loading,
-        page: prev.page + 1,
-        // refreshing: !prev.refreshing && false,
+        loading: false,
+        params: {...prev.params, page: prev.params.page + 1},
+        refreshing: false,
       }));
-      setData((prevData) => [...prevData, ...result]);
     } catch (error) {
       return error;
     }
   };
 
-  return {data, getImage, states};
+  const refreshData = async () => {
+    if (states.refreshing) {
+      return;
+    }
+    const {limit} = states;
+    setStates((prev) => ({...prev, refreshing: true}));
+    try {
+      const result = await fetchImage({page: 1, limit});
+      setData(result);
+      setStates((prev) => ({
+        ...prev,
+        page: prev.page + 1,
+        refreshing: false,
+      }));
+    } catch (error) {
+      return error;
+    }
+  };
+
+  return {data, getMoreData, states, refreshData};
 };

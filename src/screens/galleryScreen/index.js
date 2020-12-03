@@ -1,32 +1,31 @@
-import React from 'react';
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {FlatList, Button, ActivityIndicator} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
-import axios from 'axios';
 import {StyledImg, StyledTouchableOpacity} from './styles';
 import {useGetImages} from '../../hooks/useGetImages';
 
 export default function GalleryScreen() {
-  const {data, getImage, states} = useGetImages();
+  const {data, getMoreData, states, refreshData} = useGetImages();
   const [quality, setQuality] = useState(false);
 
   const more = () => {
-    getImage();
+    getMoreData();
   };
 
   useEffect(() => {
-    getImage();
+    getMoreData();
   }, []);
 
   const refreshdata = () => {
-    getImage(true);
+    refreshData();
   };
 
-  console.log('re-render');
   const RenderItem = ({item}) => {
     return <Item xd={item} />;
   };
+
+  const memoizedValue = useMemo(() => RenderItem, [data, quality]);
 
   const Item = ({xd}) => {
     const navigation = useNavigation();
@@ -52,16 +51,16 @@ export default function GalleryScreen() {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
+    <SafeAreaView style={{flex: 1, height: '100%'}}>
       <Button title="Quality" onPress={() => setQuality((prev) => !prev)} />
       <FlatList
         style={{flex: 1, height: '100%'}}
         data={data}
-        renderItem={RenderItem}
+        renderItem={memoizedValue}
         keyExtractor={(item, index) => String(index)}
         numColumns={2}
         onEndReached={more}
-        onEndReachedThreshold={5}
+        onEndReachedThreshold={1}
         onRefresh={refreshdata}
         refreshing={states.refreshing}
         ListFooterComponent={Footer}

@@ -1,6 +1,7 @@
 import {request} from '../utils/request';
 
 const fetchImage = async (params) => {
+  console.log(params);
   try {
     const data = await request({
       method: 'get',
@@ -8,6 +9,7 @@ const fetchImage = async (params) => {
       params: {
         limit: params.limit,
         page: params.page,
+        tag: '',
       },
     });
     // console.log(data.config);
