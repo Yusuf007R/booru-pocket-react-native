@@ -5,11 +5,12 @@ import ImageZoom from 'react-native-image-pan-zoom';
 import VideoPlayer from 'react-native-video-controls';
 
 export default function ImageScreen({navigation, route}) {
-  const [xd, setxd] = useState(1);
+  const [index, setIndex] = useState(route.params.index);
+  const [rerender, setRerender] = useState(1);
 
   useEffect(() => {
     Dimensions.addEventListener('change', () => {
-      setxd((xdd) => xdd + 1);
+      setRerender((prev) => prev + 1);
     });
   }, []);
 
@@ -26,21 +27,14 @@ export default function ImageScreen({navigation, route}) {
   //     };
   return (
     <ImageZoom
-      longPressTime={1500}
-      onLongPress={() => {
-        alert('xd');
-      }}
-      style={{
-        flex: 1,
-        backgroundColor: 'black',
-      }}
+      style={{flex: 1, height: '100%', width: '100%'}}
       cropWidth={Dimensions.get('window').width}
       cropHeight={Dimensions.get('window').height}
       imageWidth={Dimensions.get('window').width}
       imageHeight={Dimensions.get('window').height}>
       <StyledImg
         resizeMode={'contain'}
-        source={{uri: route.params.data.large_file_url}}
+        source={{uri: route.params.data[index].large_file_url}}
       />
     </ImageZoom>
   );

@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {fetchImage} from '../services/fetchImage';
+import fetchImage from '../services/fetchImage';
 
 export const useGetImages = () => {
   const [data, setData] = useState([]);
@@ -7,8 +7,8 @@ export const useGetImages = () => {
     params: {
       limit: 50,
       page: 1,
+      arrayTags: ['genshin_impact', 'rating:safe'],
     },
-    tags: [],
     loading: false,
     refreshing: false,
   });
@@ -17,10 +17,11 @@ export const useGetImages = () => {
     if (states.loading) {
       return;
     }
-    const {page, limit} = states.params;
+    const {page, limit, arrayTags} = states.params;
+    let tags = arrayTags.join(' ');
     setStates((prev) => ({...prev, loading: true}));
     try {
-      const result = await fetchImage({page, limit});
+      const result = await fetchImage({page, limit, tags});
       setData((prevData) => [...prevData, ...result]);
       setStates((prev) => ({
         ...prev,
@@ -37,10 +38,11 @@ export const useGetImages = () => {
     if (states.refreshing) {
       return;
     }
-    const {limit} = states;
+    const {limit, arrayTags} = states.params;
+    let tags = arrayTags.join(' ');
     setStates((prev) => ({...prev, refreshing: true}));
     try {
-      const result = await fetchImage({page: 1, limit});
+      const result = await fetchImage({page: 1, limit, tags});
       setData(result);
       setStates((prev) => ({
         ...prev,

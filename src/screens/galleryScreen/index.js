@@ -1,21 +1,28 @@
-import React, {useEffect, useState, useMemo} from 'react';
-import {FlatList, ActivityIndicator, View, StatusBar} from 'react-native';
+import React, {useEffect, useState, useMemo, useRef} from 'react';
+import {
+  FlatList,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  View,
+  StatusBar,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {StyledImg, StyledTouchableOpacity} from './styles';
+import {StyledImg, StyledTouchableOpacity, StyledAnimated} from './styles';
 import {useGetImages} from '../../hooks/useGetImages';
 import SearchInput from '../../components/SearchInput';
 import Animated from 'react-native-reanimated';
+import {FlexView} from '../../components/Containers';
+import AutoCompleteList from '../../components/AutoCompleteList';
+import Navbar from '../../components/navBar';
 
 export default function GalleryScreen() {
+  const GalleryRef = useRef(null);
   const {data, getMoreData, states, refreshData} = useGetImages();
+  const [animation, setAnimation] = useState(true);
   const [quality, setQuality] = useState(true);
   const scrollY = new Animated.Value(0);
   const HeaderHeight = 70 + StatusBar.currentHeight;
-  const diffClamp = Animated.diffClamp(scrollY, 0, HeaderHeight);
-  const translateY = Animated.interpolate(diffClamp, {
-    inputRange: [0, HeaderHeight],
-    outputRange: [0, -HeaderHeight],
-  });
 
   const more = () => {
     getMoreData();
@@ -65,25 +72,14 @@ export default function GalleryScreen() {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'black'}}>
-      <Animated.View
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          height: HeaderHeight,
-          zIndex: 1000,
-          elevation: 1000,
-          backgroundColor: 'transparent',
-          transform: [{translateY: translateY}],
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingTop: 45,
-        }}>
-        <SearchInput />
-      </Animated.View>
+    <FlexView>
+      <Navbar
+        ListRef={GalleryRef}
+        scrollY={scrollY}
+        HeaderHeight={HeaderHeight}
+      />
       <FlatList
+        ref={GalleryRef}
         style={{paddingTop: HeaderHeight - 5}}
         data={data}
         renderItem={memoizedValue}
@@ -101,6 +97,6 @@ export default function GalleryScreen() {
           scrollY.setValue(e.nativeEvent.contentOffset.y);
         }}
       />
-    </View>
+    </FlexView>
   );
 }
