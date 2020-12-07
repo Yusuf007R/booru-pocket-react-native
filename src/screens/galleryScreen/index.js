@@ -8,12 +8,10 @@ import {
   StatusBar,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {StyledImg, StyledTouchableOpacity, StyledAnimated} from './styles';
+import {StyledImg, StyledTouchableOpacity} from './styles';
 import {useGetImages} from '../../hooks/useGetImages';
-import SearchInput from '../../components/SearchInput';
 import Animated from 'react-native-reanimated';
 import {FlexView} from '../../components/Containers';
-import AutoCompleteList from '../../components/AutoCompleteList';
 import Navbar from '../../components/navBar';
 
 export default function GalleryScreen() {

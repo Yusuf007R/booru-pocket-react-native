@@ -8,6 +8,8 @@ target 'BooruPocket' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'RNSharedElement', :path => '../node_modules/react-native-shared-element'
+
   target 'BooruPocketTests' do
     inherit! :complete
     # Pods for testing
