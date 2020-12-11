@@ -1,14 +1,15 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import fetchImage from '../services/fetchImage';
+import {ParamsContext} from '../contexts/paramsContext/context';
 
-export const useGetImages = () => {
+export default function useGetImages() {
+  const {
+    params: {page, limit, arrayTags},
+    setParams,
+  } = useContext(ParamsContext);
+
   const [data, setData] = useState([]);
   const [states, setStates] = useState({
-    params: {
-      limit: 50,
-      page: 1,
-      arrayTags: ['genshin_impact', 'rating:safe'],
-    },
     loading: false,
     refreshing: false,
   });
@@ -17,18 +18,18 @@ export const useGetImages = () => {
     if (states.loading) {
       return;
     }
-    const {page, limit, arrayTags} = states.params;
-    let tags = arrayTags.join(' ');
     setStates((prev) => ({...prev, loading: true}));
     try {
+      let tags = [...arrayTags];
+      tags = tags.join(' ');
       const result = await fetchImage({page, limit, tags});
       setData((prevData) => [...prevData, ...result]);
       setStates((prev) => ({
         ...prev,
         loading: false,
-        params: {...prev.params, page: prev.params.page + 1},
         refreshing: false,
       }));
+      setParams((prev) => ({...prev, page: prev.page + 1}));
     } catch (error) {
       return error;
     }
@@ -38,21 +39,21 @@ export const useGetImages = () => {
     if (states.refreshing) {
       return;
     }
-    const {limit, arrayTags} = states.params;
-    let tags = arrayTags.join(' ');
     setStates((prev) => ({...prev, refreshing: true}));
     try {
+      let tags = [...arrayTags];
+      tags = tags.join(' ');
       const result = await fetchImage({page: 1, limit, tags});
       setData(result);
       setStates((prev) => ({
         ...prev,
-        page: prev.page + 1,
         refreshing: false,
       }));
+      setParams((prev) => ({...prev, page: 2}));
     } catch (error) {
       return error;
     }
   };
 
   return {data, getMoreData, states, refreshData};
-};
+}
