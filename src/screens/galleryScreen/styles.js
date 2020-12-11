@@ -1,10 +1,10 @@
 import styled from 'styled-components/native';
 import Animated from 'react-native-reanimated';
-import {StatusBar} from 'react-native';
+import {StatusBar, Dimensions} from 'react-native';
 
 export const StyledImg = styled.Image`
   width: 100%;
-  height: 200px;
+  height: ${Dimensions.get('window').width / 2}px;
 `;
 
 export const StyledTouchableOpacity = styled.TouchableOpacity`

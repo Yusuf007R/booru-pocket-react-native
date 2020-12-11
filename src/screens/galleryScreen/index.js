@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useRef} from 'react';
+import React, {useEffect, useState, useMemo, useRef, useContext} from 'react';
 import {
   FlatList,
   TouchableOpacity,
@@ -6,18 +6,19 @@ import {
   ActivityIndicator,
   View,
   StatusBar,
+  Dimensions,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {StyledImg, StyledTouchableOpacity} from './styles';
-import {useGetImages} from '../../hooks/useGetImages';
+import useGetImages from '../../hooks/useGetImages';
 import Animated from 'react-native-reanimated';
 import {FlexView} from '../../components/Containers';
 import Navbar from '../../components/navBar';
+import {ParamsContext} from '../../contexts/paramsContext/context';
 
 export default function GalleryScreen() {
   const GalleryRef = useRef(null);
   const {data, getMoreData, states, refreshData} = useGetImages();
-  const [animation, setAnimation] = useState(true);
   const [quality, setQuality] = useState(true);
   const scrollY = new Animated.Value(0);
   const HeaderHeight = 70 + StatusBar.currentHeight;
@@ -26,7 +27,6 @@ export default function GalleryScreen() {
     getMoreData();
   };
 
-  console.log('re-render');
   useEffect(() => {
     getMoreData();
   }, []);
@@ -75,8 +75,10 @@ export default function GalleryScreen() {
         ListRef={GalleryRef}
         scrollY={scrollY}
         HeaderHeight={HeaderHeight}
+        refreshGallery={refreshData}
       />
       <FlatList
+        scrollEventThrottle={16}
         ref={GalleryRef}
         style={{paddingTop: HeaderHeight - 5}}
         data={data}
