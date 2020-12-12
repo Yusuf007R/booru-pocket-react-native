@@ -3,6 +3,7 @@ import {Dimensions} from 'react-native';
 import {StyledImg} from './styles';
 import ImageZoom from 'react-native-image-pan-zoom';
 import VideoPlayer from 'react-native-video-controls';
+import FastImage from 'react-native-fast-image';
 
 export default function ImageScreen({navigation, route}) {
   const [index, setIndex] = useState(route.params.index);
@@ -33,7 +34,7 @@ export default function ImageScreen({navigation, route}) {
       imageWidth={Dimensions.get('window').width}
       imageHeight={Dimensions.get('window').height}>
       <StyledImg
-        resizeMode={'contain'}
+        resizeMode={FastImage.resizeMode.contain}
         source={{uri: route.params.data[index].large_file_url}}
       />
     </ImageZoom>
