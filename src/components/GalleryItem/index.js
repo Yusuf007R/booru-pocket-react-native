@@ -1,16 +1,14 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {StyledImg, StyledTouchableOpacity} from './styles';
-import FastImage from 'react-native-fast-image';
 
-function Item({imageData, index, quality, data}) {
+function Item({imageData, quality}) {
   const navigation = useNavigation();
   return (
     <StyledTouchableOpacity
       onPress={() => {
         navigation.push('IMG', {
-          data: data,
-          index: index,
+          data: imageData.large_file_url,
         });
       }}>
       <StyledImg
@@ -22,4 +20,5 @@ function Item({imageData, index, quality, data}) {
   );
 }
 
-export default Item;
+// export default Item;
+export default React.memo(Item, () => false);

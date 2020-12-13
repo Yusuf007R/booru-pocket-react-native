@@ -15,7 +15,7 @@ export const StyledAnimated = styled(Animated.View)`
   left: 0;
   right: 0;
   top: 0;
-  height: ${(props) => props.HeaderHeight}px;
+  height: ${(props) => props.headerHeight}px;
   z-index: 10000;
   align-items: center;
   justify-content: center;
@@ -36,7 +36,7 @@ export const StyledTouchable = styled.TouchableOpacity`
 export const ListView = styled.View`
   width: 90%;
   position: absolute;
-  top: ${(props) => props.HeaderHeight}px;
+  top: ${(props) => props.headerHeight}px;
   left: 20px;
   right: 20px;
   z-index: 1000;
@@ -45,4 +45,10 @@ export const ListView = styled.View`
 export const StyledInput = styled.TextInput`
   margin-left: 5px;
   width: 100%;
+`;
+
+export const RowView = styled.View`
+  height: 45px;
+  align-items: center;
+  flex-direction: row;
 `;

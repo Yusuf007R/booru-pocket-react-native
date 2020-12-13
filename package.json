@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "node ./node_modules/react-native-infinite-flatlist-patch/patch.js"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
@@ -20,12 +21,14 @@
     "react-native-fast-image": "^8.3.4",
     "react-native-gesture-handler": "^1.9.0",
     "react-native-image-pan-zoom": "^2.1.12",
+    "react-native-infinite-flatlist-patch": "^1.0.8",
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0",
     "react-native-vector-icons": "^7.1.0",
     "react-native-video": "^5.1.0-alpha8",
     "react-native-video-controls": "^2.7.1",
+    "recyclerlistview": "^3.0.0",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
@@ -36,7 +39,8 @@
     "eslint": "^6.5.1",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
-    "react-test-renderer": "16.13.1"
+    "react-test-renderer": "16.13.1",
+    "reactotron-react-native": "^5.0.0"
   },
   "jest": {
     "preset": "react-native"

@@ -7,27 +7,33 @@ import {
   StyledTouchable,
   ListView,
   StyledInput,
+  RowView,
 } from './styles';
-import {FlexView} from '../Containers';
 import autoCompleteRequest from '../../services/autoCompleteRequest';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {ParamsContext} from '../../contexts/paramsContext/context';
+import {FlexView} from '../Containers/';
 
-function Navbar({HeaderHeight, scrollY, refreshGallery}) {
+function Navbar({headerHeight, scrollY, refreshGallery}) {
   const {params, setParams} = useContext(ParamsContext);
   const input = useRef(null);
   const [data, setData] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [toggleAnimation, setToggleAnimation] = useState(true);
-  const diffClamp = Animated.diffClamp(scrollY, 0, HeaderHeight);
+  const diffClamp = Animated.diffClamp(scrollY, 0, headerHeight);
   const translateY = Animated.interpolate(diffClamp, {
-    inputRange: [0, HeaderHeight],
-    outputRange: [0, -HeaderHeight],
+    inputRange: [0, headerHeight],
+    outputRange: [0, -headerHeight],
   });
 
+  // console.log('re-render');
+
   useEffect(() => {
-    if ((data.length || isFetching) && toggleAnimation) {
+    if (input.current.isFocused()) {
+      return setToggleAnimation(false);
+    }
+    if (data.length && isFetching && toggleAnimation) {
       return setToggleAnimation(false);
     }
     if (!toggleAnimation && !data.length) {
@@ -42,6 +48,7 @@ function Navbar({HeaderHeight, scrollY, refreshGallery}) {
 
   useEffect(() => {
     if (inputText === '') {
+      setIsFetching(false);
       return setData([]);
     }
     setIsFetching(true);
@@ -53,7 +60,7 @@ function Navbar({HeaderHeight, scrollY, refreshGallery}) {
       <TouchableOpacity
         onPress={() => {
           input.current.clear();
-          setIsFetching(false);
+
           setData([]);
           setParams((prev) => ({
             ...prev,
@@ -72,27 +79,16 @@ function Navbar({HeaderHeight, scrollY, refreshGallery}) {
   return (
     <FlexView>
       <StyledAnimated
-        HeaderHeight={HeaderHeight}
+        headerHeight={headerHeight}
         style={{
           transform: [{translateY: toggleAnimation ? translateY : 0}],
         }}>
         <InputView>
-          <View
-            style={{
-              height: 45,
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
+          <RowView>
             {params.arrayTags
               .filter((text) => text !== 'rating:safe')
               .map((item, index) => (
-                <View
-                  key={`${index}View`}
-                  style={{
-                    height: 45,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}>
+                <RowView key={`${index}View`}>
                   <Text key={index} style={{marginLeft: 5}}>
                     {item}
                   </Text>
@@ -110,32 +106,33 @@ function Navbar({HeaderHeight, scrollY, refreshGallery}) {
                       name={'close'}
                     />
                   </TouchableOpacity>
-                </View>
+                </RowView>
               ))}
-          </View>
+          </RowView>
 
           <StyledInput
-            onKeyPress={(event) => {
-              if (event.nativeEvent.key === ' ') {
-                setIsFetching(false);
-                setData([]);
-                setParams((prev) => ({
-                  ...prev,
-                  arrayTags: [
-                    ...prev.arrayTags,
-                    input.current._internalFiberInstanceHandleDEV.memoizedProps
-                      .value,
-                  ],
-                }));
-                input.current.clear();
-              }
-            }}
             onSubmitEditing={refreshGallery}
             autoCapitalize={'none'}
             onFocus={() => setToggleAnimation(false)}
             ref={input}
             onChangeText={(query) => {
-              setInputText(query);
+              if (/\s/.test(query)) {
+                if (query.length > 1) {
+                  setIsFetching(false);
+                  setData([]);
+                  setParams((prev) => ({
+                    ...prev,
+                    arrayTags: [...prev.arrayTags, query],
+                  }));
+                  setInputText('');
+                  return input.current.clear();
+                }
+                console.log('fuera');
+                setInputText('');
+                return;
+              } else {
+                setInputText(query);
+              }
             }}
             value={inputText}
             editable={true}
@@ -151,7 +148,7 @@ function Navbar({HeaderHeight, scrollY, refreshGallery}) {
           </StyledTouchable>
         </InputView>
       </StyledAnimated>
-      <ListView HeaderHeight={HeaderHeight}>
+      <ListView headerHeight={headerHeight}>
         <FlatList
           keyboardShouldPersistTaps={'handled'}
           data={data}

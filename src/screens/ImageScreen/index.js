@@ -35,7 +35,7 @@ export default function ImageScreen({navigation, route}) {
       imageHeight={Dimensions.get('window').height}>
       <StyledImg
         resizeMode={FastImage.resizeMode.contain}
-        source={{uri: route.params.data[index].large_file_url}}
+        source={{uri: route.params.data}}
       />
     </ImageZoom>
   );

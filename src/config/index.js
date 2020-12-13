@@ -1,6 +1,6 @@
 //Base api url
 
-const baseUrl = 'http://danbooru.donmai.us';
+const baseUrl = 'https://danbooru.donmai.us';
 
 //generic error
 

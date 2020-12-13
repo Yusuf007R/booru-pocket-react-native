@@ -1,6 +1,15 @@
 import {useContext, useState} from 'react';
 import fetchImage from '../services/fetchImage';
 import {ParamsContext} from '../contexts/paramsContext/context';
+// import {request} from '../utils/request';
+// import {AsyncStorage} from 'react-native';
+
+// import Reactotron from 'reactotron-react-native';
+
+// Reactotron.setAsyncStorageHandler(AsyncStorage) // AsyncStorage would either come from `react-native` or `@react-native-community/async-storage` depending on where you get it from
+//   .configure() // controls connection & communication settings
+//   .useReactNative() // add all built-in react native plugins
+//   .connect(); // let's connect!
 
 export default function useGetImages() {
   const {
@@ -13,16 +22,14 @@ export default function useGetImages() {
     loading: false,
     refreshing: false,
   });
-
-  const getMoreData = async () => {
+  const getMoreData = () => {
     if (states.loading) {
       return;
     }
     setStates((prev) => ({...prev, loading: true}));
-    try {
-      let tags = [...arrayTags];
-      tags = tags.join(' ');
-      const result = await fetchImage({page, limit, tags});
+    let tags = [...arrayTags];
+    tags = tags.join(' ');
+    fetchImage({page, limit, tags}).then((result) => {
       setData((prevData) => [...prevData, ...result]);
       setStates((prev) => ({
         ...prev,
@@ -30,9 +37,7 @@ export default function useGetImages() {
         refreshing: false,
       }));
       setParams((prev) => ({...prev, page: prev.page + 1}));
-    } catch (error) {
-      return error;
-    }
+    });
   };
 
   const refreshData = async () => {
@@ -40,19 +45,23 @@ export default function useGetImages() {
       return;
     }
     setStates((prev) => ({...prev, refreshing: true}));
-    try {
-      let tags = [...arrayTags];
-      tags = tags.join(' ');
-      const result = await fetchImage({page: 1, limit, tags});
+    let tags = [...arrayTags];
+    tags = tags.join(' ');
+    fetchImage({limit, tags, page: 1}).then((result) => {
       setData(result);
       setStates((prev) => ({
         ...prev,
+        loading: false,
         refreshing: false,
       }));
-      setParams((prev) => ({...prev, page: 2}));
-    } catch (error) {
-      return error;
-    }
+      setParams((prev) => ({...prev, page: prev.page + 1}));
+    });
+    // result = result.map((element) => {
+    //     return {
+    //       large_file_url: element.large_file_url,
+    //       preview_file_url: element.preview_file_url,
+    //     };
+    //   });
   };
 
   return {data, getMoreData, states, refreshData};
