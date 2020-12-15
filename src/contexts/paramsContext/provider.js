@@ -4,7 +4,7 @@ import {ParamsContext} from './context';
 export default function ParamsContextProvider({children}) {
   const [params, setParams] = useState({
     page: 1,
-    limit: 50,
+    limit: 30,
     arrayTags: ['rating:safe'],
   });
   const [inputArray, setInputArray] = useState([]);
