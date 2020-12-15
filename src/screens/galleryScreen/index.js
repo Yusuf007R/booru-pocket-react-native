@@ -60,7 +60,7 @@ function GalleryScreen() {
   };
 
   const memoizedRender = useCallback(
-    (index, item) => <Item imageData={item} quality={quality} />,
+    (index, item) => <Item data={item} quality={quality} />,
     [quality],
   );
 

@@ -1,24 +1,36 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {StyledImg, StyledTouchableOpacity} from './styles';
+import get_url_extension from '../../utils/getUrlExtention';
 
-function Item({imageData, quality}) {
+function Item({data, quality}) {
   const navigation = useNavigation();
+  const file = get_url_extension(data.large_file_url);
+  const video = file === 'mp4' || file === 'webm';
+
+  const URL = () => {
+    if (video) {
+      return data.preview_file_url;
+    }
+    if (quality) {
+      return data.large_file_url;
+    }
+    return data.preview_file_url;
+  };
+
   return (
     <StyledTouchableOpacity
       onPress={() => {
         navigation.push('IMG', {
-          data: imageData.large_file_url,
+          data: data,
         });
       }}>
       <StyledImg
         source={{
-          uri: quality ? imageData.large_file_url : imageData.preview_file_url,
+          uri: URL(),
         }}
       />
     </StyledTouchableOpacity>
   );
 }
-
-// export default Item;
 export default React.memo(Item, () => false);
