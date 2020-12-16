@@ -1,5 +1,19 @@
-import React, {useEffect, useRef, useState, useMemo, useContext} from 'react';
-import {View, FlatList, TouchableOpacity, Text, Keyboard} from 'react-native';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useContext,
+  useCallback,
+} from 'react';
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  Keyboard,
+  // AsyncStorage,
+} from 'react-native';
 import Animated from 'react-native-reanimated';
 import {
   StyledAnimated,
@@ -13,13 +27,13 @@ import autoCompleteRequest from '../../services/autoCompleteRequest';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {ParamsContext} from '../../contexts/paramsContext/context';
 import {FlexView} from '../Containers/';
+// import Reactotron from 'reactotron-react-native';
 
-function Navbar({headerHeight, scrollY, refreshGallery}) {
+function Navbar({headerHeight, scrollY, refreshGallery, refreshingGallery}) {
   const {params, setParams} = useContext(ParamsContext);
   const input = useRef(null);
   const [data, setData] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [isFetching, setIsFetching] = useState(false);
   const [toggleAnimation, setToggleAnimation] = useState(true);
   const diffClamp = Animated.diffClamp(scrollY, 0, headerHeight);
   const translateY = Animated.interpolate(diffClamp, {
@@ -27,40 +41,44 @@ function Navbar({headerHeight, scrollY, refreshGallery}) {
     outputRange: [0, -headerHeight],
   });
 
-  // console.log('re-render');
-
-  useEffect(() => {
-    if (input.current.isFocused()) {
-      return setToggleAnimation(false);
-    }
-    if (data.length && isFetching && toggleAnimation) {
-      return setToggleAnimation(false);
-    }
-    if (!toggleAnimation && !data.length) {
-      setToggleAnimation(true);
-    }
-  }, [data]);
-
+  // useEffect(() => {
+  //   Reactotron.onCustomCommand('test', () => Reactotron.log(inputText));
+  // }, []);
   const AutoCompletefetch = async (query) => {
     const result = await autoCompleteRequest(query);
     setData(result);
   };
 
   useEffect(() => {
-    if (inputText === '') {
-      setIsFetching(false);
-      return setData([]);
+    if (toggleAnimation) {
+      scrollY.setValue(0);
     }
-    setIsFetching(true);
-    AutoCompletefetch(inputText);
-  }, [inputText]);
+  }, [toggleAnimation]);
 
-  const renderItem = ({item}) => {
-    return (
+  useEffect(() => {
+    if (refreshingGallery.current) {
+      refreshingGallery.current = false;
+      refreshGallery();
+    }
+  }, [params.arrayTags]);
+
+  const refresh = () => {
+    refreshingGallery.current = true;
+    input.current.blur();
+    let tags = inputText.split(' ');
+    tags = tags.filter((tag) => tag !== '');
+    setInputText('');
+    setParams((prev) => ({
+      ...prev,
+      arrayTags: [...prev.arrayTags, ...tags],
+    }));
+  };
+
+  const memoizedRenderItem = useCallback(
+    ({item}) => (
       <TouchableOpacity
         onPress={() => {
-          input.current.clear();
-
+          setInputText('');
           setData([]);
           setParams((prev) => ({
             ...prev,
@@ -71,10 +89,9 @@ function Navbar({headerHeight, scrollY, refreshGallery}) {
           <Text>{item.name}</Text>
         </View>
       </TouchableOpacity>
-    );
-  };
-
-  const memoizedValue = useMemo(() => renderItem, [data]);
+    ),
+    [],
+  );
 
   return (
     <FlexView>
@@ -85,54 +102,46 @@ function Navbar({headerHeight, scrollY, refreshGallery}) {
         }}>
         <InputView>
           <RowView>
-            {params.arrayTags
-              .filter((text) => text !== 'rating:safe')
-              .map((item, index) => (
-                <RowView key={`${index}View`}>
-                  <Text key={index} style={{marginLeft: 5}}>
-                    {item}
-                  </Text>
-                  <TouchableOpacity
-                    key={`${index}Touchable`}
-                    onPress={() => {
-                      let tempParams = params.arrayTags.filter((element) => {
-                        return element !== item;
-                      });
-                      setParams((prev) => ({...prev, arrayTags: tempParams}));
-                    }}>
-                    <MaterialIcons
-                      key={`${index}Icon`}
-                      size={20}
-                      name={'close'}
-                    />
-                  </TouchableOpacity>
-                </RowView>
-              ))}
+            {params.arrayTags.map((item, index) => (
+              <RowView key={`${index}View`}>
+                <Text key={index} style={{marginLeft: 5}}>
+                  {item}
+                </Text>
+                <TouchableOpacity
+                  key={`${index}Touchable`}
+                  onPress={() => {
+                    let tempParams = params.arrayTags.filter(
+                      (element, filterIndex) => {
+                        return filterIndex !== index;
+                      },
+                    );
+                    setParams((prev) => ({...prev, arrayTags: tempParams}));
+                  }}>
+                  <MaterialIcons
+                    key={`${index}Icon`}
+                    size={20}
+                    name={'close'}
+                  />
+                </TouchableOpacity>
+              </RowView>
+            ))}
           </RowView>
 
           <StyledInput
-            onSubmitEditing={refreshGallery}
+            onSubmitEditing={refresh}
             autoCapitalize={'none'}
-            onFocus={() => setToggleAnimation(false)}
+            onFocus={() => {
+              setData([]);
+              setToggleAnimation(false);
+            }}
+            onBlur={() => setToggleAnimation(true)}
             ref={input}
             onChangeText={(query) => {
-              if (/\s/.test(query)) {
-                if (query.length > 1) {
-                  setIsFetching(false);
-                  setData([]);
-                  setParams((prev) => ({
-                    ...prev,
-                    arrayTags: [...prev.arrayTags, query],
-                  }));
-                  setInputText('');
-                  return input.current.clear();
-                }
-                console.log('fuera');
-                setInputText('');
-                return;
-              } else {
-                setInputText(query);
+              setInputText(query);
+              if (query === '') {
+                return setData([]);
               }
+              AutoCompletefetch(query);
             }}
             value={inputText}
             editable={true}
@@ -141,7 +150,6 @@ function Navbar({headerHeight, scrollY, refreshGallery}) {
             onPress={() => {
               input.current.clear();
               Keyboard.dismiss();
-              setIsFetching(false);
               setData([]);
             }}>
             <MaterialIcons size={25} name={'close'} />
@@ -149,12 +157,14 @@ function Navbar({headerHeight, scrollY, refreshGallery}) {
         </InputView>
       </StyledAnimated>
       <ListView headerHeight={headerHeight}>
-        <FlatList
-          keyboardShouldPersistTaps={'handled'}
-          data={data}
-          keyExtractor={(item, index) => String(index)}
-          renderItem={memoizedValue}
-        />
+        {!toggleAnimation && (
+          <FlatList
+            keyboardShouldPersistTaps={'handled'}
+            data={data}
+            keyExtractor={(item, index) => String(index)}
+            renderItem={memoizedRenderItem}
+          />
+        )}
       </ListView>
     </FlexView>
   );

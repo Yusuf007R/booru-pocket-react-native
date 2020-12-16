@@ -5,7 +5,8 @@ export default function ParamsContextProvider({children}) {
   const [params, setParams] = useState({
     page: 1,
     limit: 30,
-    arrayTags: ['rating:safe'],
+    arrayTags: [],
+    safe: true,
   });
   const [inputArray, setInputArray] = useState([]);
 

@@ -1,17 +1,19 @@
-import {Dimensions} from 'react-native';
+import {Dimensions, View} from 'react-native';
 import {LayoutProvider} from 'recyclerlistview';
 
 const ViewTypes = {
-  FULL: 0,
+  FIRST: 0,
   HALF_LEFT: 1,
   HALF_RIGHT: 2,
 };
 
-let {width} = Dimensions.get('window');
-
-export const layoutMaker = () =>
-  new LayoutProvider(
+export const layoutMaker = (landscape, headerHeight) => {
+  const {width, height} = Dimensions.get('window');
+  return new LayoutProvider(
     (index) => {
+      if (index === 0) {
+        return ViewTypes.FIRST;
+      }
       if (index % 2 === 0) {
         return ViewTypes.HALF_LEFT;
       } else {
@@ -20,13 +22,19 @@ export const layoutMaker = () =>
     },
     (type, dim) => {
       switch (type) {
+        case ViewTypes.FIRST:
+          dim.width = width;
+          dim.height = headerHeight - 5;
+          break;
         case ViewTypes.HALF_LEFT:
           dim.width = width / 2;
-          dim.height = width / 2;
+          dim.height = landscape ? height / 2 : width / 2;
+
           break;
         case ViewTypes.HALF_RIGHT:
           dim.width = width / 2 - 0.001;
-          dim.height = width / 2;
+          dim.height = landscape ? height / 2 : width / 2;
+
           break;
         default:
           dim.width = 0;
@@ -34,3 +42,4 @@ export const layoutMaker = () =>
       }
     },
   );
+};

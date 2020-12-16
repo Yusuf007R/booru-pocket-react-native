@@ -1,5 +1,11 @@
 import React, {useEffect, useState, useRef, useCallback, useMemo} from 'react';
-import {StatusBar, View} from 'react-native';
+import {
+  // AsyncStorage,
+  Dimensions,
+  RefreshControl,
+  StatusBar,
+  View,
+} from 'react-native';
 import useGetImages from '../../hooks/useGetImages';
 import Animated from 'react-native-reanimated';
 import Navbar from '../../components/navBar';
@@ -17,14 +23,27 @@ import {layoutMaker} from '../../utils/layoutMaker';
 function GalleryScreen() {
   const GalleryRef = useRef(null);
   const ListKey = useRef(1);
-  const {data, getData} = useGetImages();
+  const refreshing = useRef(false);
+  const {data, getData, error} = useGetImages();
   const contentSizeHeight = useRef(null);
   const [quality, setQuality] = useState(true);
   const scrollY = useMemo(() => new Animated.Value(0), []);
   const headerHeight = useMemo(() => 70 + StatusBar.currentHeight, []);
   const [dataProvider, setDataProvider] = useState(dataProviderMaker(data));
 
-  const _layoutProvider = useRef(layoutMaker()).current;
+  useEffect(() => {
+    function reRender({window: {width, height}}) {
+      setlayoutProvider(layoutMaker(width > height, headerHeight));
+    }
+    Dimensions.addEventListener('change', reRender);
+    return () => {
+      Dimensions.removeEventListener('change', reRender);
+    };
+  }, []);
+
+  const [layoutProvider, setlayoutProvider] = useState(
+    layoutMaker(false, headerHeight),
+  );
 
   const fetchData = () => {
     getData();
@@ -43,24 +62,27 @@ function GalleryScreen() {
     setDataProvider(dataProviderMaker(data));
   }, [data]);
 
-  const scroll = ({nativeEvent}) => {
-    if (nativeEvent.contentOffset.y < 0) {
-      scrollY.setValue(0);
-    } else {
+  const scroll = ({
+    nativeEvent: {layoutMeasurement, contentOffset, contentSize},
+  }) => {
+    if (contentOffset.y < 0) {
+      return scrollY.setValue(0);
     }
-    scrollY.setValue(nativeEvent.contentOffset.y);
-
-    if (nativeEvent.contentOffset.y - nativeEvent.contentSize.height > -2500) {
-      if (contentSizeHeight.current === nativeEvent.contentSize.height) {
+    scrollY.setValue(contentOffset.y);
+    if (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - 2500
+    ) {
+      if (contentSizeHeight.current === contentSize.height) {
         return;
       }
-      contentSizeHeight.current = nativeEvent.contentSize.height;
+      contentSizeHeight.current = contentSize.height;
       fetchData();
     }
   };
 
   const memoizedRender = useCallback(
-    (index, item) => <Item data={item} quality={quality} />,
+    (index, item) => <Item data={item} index={index} quality={quality} />,
     [quality],
   );
 
@@ -71,14 +93,25 @@ function GalleryScreen() {
         scrollY={scrollY}
         headerHeight={headerHeight}
         refreshGallery={refreshData}
+        refreshingGallery={refreshing}
       />
       {data.length ? (
         <RecyclerListView
+          renderAheadOffset={600}
+          canChangeSize={true}
           key={ListKey.current}
           ref={GalleryRef}
-          style={{paddingTop: headerHeight - 5}}
-          scrollViewProps={{scrollEventThrottle: 16}}
-          layoutProvider={_layoutProvider}
+          scrollViewProps={{
+            scrollEventThrottle: 16,
+            refreshControl: (
+              <RefreshControl
+                refreshing={refreshing.current}
+                progressViewOffset={headerHeight}
+                onRefresh={refreshData}
+              />
+            ),
+          }}
+          layoutProvider={layoutProvider}
           dataProvider={dataProvider}
           rowRenderer={memoizedRender}
           extendedState={{quality}}
