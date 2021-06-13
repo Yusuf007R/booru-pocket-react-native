@@ -4,13 +4,14 @@ const autoCompleteRequest = async (tags) => {
   try {
     const data = await request({
       method: 'get',
-      url: '/tags/autocomplete.json',
+      url: '/autocomplete.json',
       params: {
-        'search[name_matches]': tags,
+        'search[query]': tags,
+        'search[type]': 'tag_query',
         limit: 5,
       },
     });
-    // console.log(data.data);
+
     return data.data;
   } catch (err) {
     return err;

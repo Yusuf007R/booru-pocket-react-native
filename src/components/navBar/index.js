@@ -82,11 +82,11 @@ function Navbar({headerHeight, scrollY, refreshGallery, refreshingGallery}) {
           setData([]);
           setParams((prev) => ({
             ...prev,
-            arrayTags: [...prev.arrayTags, item.name],
+            arrayTags: [...prev.arrayTags, item.value],
           }));
         }}>
         <View style={{backgroundColor: 'gray', height: 40}}>
-          <Text>{item.name}</Text>
+          <Text>{item.label}</Text>
         </View>
       </TouchableOpacity>
     ),

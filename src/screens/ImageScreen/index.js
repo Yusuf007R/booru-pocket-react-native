@@ -7,8 +7,7 @@ import FastImage from 'react-native-fast-image';
 
 export default function ImageScreen({navigation, route}) {
   const [rerender, setRerender] = useState(1);
-  const {video, highQuality} = route.params;
-
+  const {video, highQuality, lowQuality} = route.params;
   useEffect(() => {
     if (video) {
       return;
