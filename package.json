@@ -7,8 +7,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint .",
-    "postinstall": "node ./node_modules/react-native-infinite-flatlist-patch/patch.js"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
@@ -21,10 +20,11 @@
     "react-native-fast-image": "^8.3.4",
     "react-native-gesture-handler": "^1.9.0",
     "react-native-image-pan-zoom": "^2.1.12",
-    "react-native-infinite-flatlist-patch": "^1.0.8",
+    "react-native-largelist-v3": "^3.0.15",
     "react-native-reanimated": "^1.13.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0",
+    "react-native-spring-scrollview": "https://gitpkg.now.sh/Yusuf007R/react-native-spring-scrollview/src?master",
     "react-native-vector-icons": "^7.1.0",
     "react-native-video": "^5.1.0-alpha8",
     "react-native-video-controls": "^2.7.1",
