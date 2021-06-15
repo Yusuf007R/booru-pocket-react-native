@@ -2,19 +2,15 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useMemo,
   useContext,
   useCallback,
 } from 'react';
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  Keyboard,
-  // AsyncStorage,
-} from 'react-native';
+import {View, FlatList, TouchableOpacity, Text, Keyboard} from 'react-native';
 import Animated from 'react-native-reanimated';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import autoCompleteRequest from '../../services/autoCompleteRequest';
+import {ParamsContext} from '../../contexts/paramsContext/context';
+import {FlexView} from '../Containers/';
 import {
   StyledAnimated,
   InputView,
@@ -23,11 +19,6 @@ import {
   StyledInput,
   RowView,
 } from './styles';
-import autoCompleteRequest from '../../services/autoCompleteRequest';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {ParamsContext} from '../../contexts/paramsContext/context';
-import {FlexView} from '../Containers/';
-// import Reactotron from 'reactotron-react-native';
 
 function Navbar({headerHeight, scrollY, refreshGallery, refreshingGallery}) {
   const {params, setParams} = useContext(ParamsContext);
@@ -41,9 +32,6 @@ function Navbar({headerHeight, scrollY, refreshGallery, refreshingGallery}) {
     outputRange: [0, -headerHeight],
   });
 
-  // useEffect(() => {
-  //   Reactotron.onCustomCommand('test', () => Reactotron.log(inputText));
-  // }, []);
   const AutoCompletefetch = async (query) => {
     const result = await autoCompleteRequest(query);
     setData(result);

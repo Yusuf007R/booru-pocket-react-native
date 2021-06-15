@@ -1,8 +1,22 @@
-import {useContext, useRef, useState} from 'react';
+import {useContext, useState} from 'react';
 import fetchImage from '../services/fetchImage';
 import {ParamsContext} from '../contexts/paramsContext/context';
-import {Dimensions} from 'react-native';
-import {useEffect} from 'react';
+
+const neededProperties = [
+  'large_file_url',
+  'preview_file_url',
+  'file_url',
+  'id',
+  'tag_string',
+  'file_ext',
+  'image_width',
+  'image_height',
+  'uploader_id',
+  'file_size',
+  'tag_string_character',
+  'tag_string_copyright',
+  'tag_string_artist',
+];
 
 export default function useGetImages() {
   const {
@@ -11,20 +25,15 @@ export default function useGetImages() {
   } = useContext(ParamsContext);
   const [data, setData] = useState([]);
   const [error, setError] = useState({});
-  const totalHeight = useRef(0);
 
-  useEffect(() => {
-    console.log(data.length);
-  }, [data]);
   const getData = (refresh, ref) => {
     let arrayTagsCopy = [...arrayTags];
     let pageNum = page;
     if (refresh) {
+      ref.current.scrollTo({x: 0, y: 0});
       pageNum = 1;
-      totalHeight.current = 0;
     }
     const requestParams = {limit, page: pageNum};
-
     if (safe) {
       arrayTagsCopy.push('rating:safe');
     }
@@ -36,24 +45,15 @@ export default function useGetImages() {
 
     fetchImage(requestParams)
       .then((result) => {
-        const {width, height} = Dimensions.get('window');
-
-        let FilteredResult = result.filter(
-          (element) => element.large_file_url || element.preview_file_url,
-        );
-
-        for (let i = 0; i < FilteredResult.length; i++) {
-          const diff =
-            FilteredResult[i].image_height / FilteredResult[i].image_width;
-          const imageHeight = (width / 2) * diff;
-          // const imageWidth = width / 2;
-          totalHeight.current += imageHeight;
-          FilteredResult[i] = {
-            ...FilteredResult[i],
-            image_height: imageHeight,
-            // image_width: imageWidth,
-          };
-        }
+        const FilteredResult = result
+          .filter(
+            (element) => element.large_file_url || element.preview_file_url,
+          )
+          .map((element) => {
+            return neededProperties.reduce((prev, item) => {
+              return {...prev, [item]: element[item]};
+            }, {});
+          });
 
         if (refresh) {
           setData([...FilteredResult]);
@@ -63,8 +63,8 @@ export default function useGetImages() {
         setData((prevData) => [...prevData, ...FilteredResult]);
         setParams((prev) => ({...prev, page: prev.page + 1}));
       })
-      .catch((error) => setError(error));
+      .catch((err) => setError(err));
   };
 
-  return {data, getData, error, totalHeight};
+  return {data, getData, error};
 }

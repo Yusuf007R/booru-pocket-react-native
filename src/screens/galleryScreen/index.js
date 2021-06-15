@@ -5,16 +5,18 @@ import Animated from 'react-native-reanimated';
 import Navbar from '../../components/navBar';
 import Item from '../../components/GalleryItem';
 import {WaterfallList} from 'react-native-largelist-v3';
+import {FlexView} from '../../components/Containers';
 
 function GalleryScreen() {
   const GalleryRef = useRef(null);
   const refreshing = useRef(false);
-  const {data, getData, error, totalHeight} = useGetImages();
-  const contentSizeHeight = useRef(null);
+  const {data, getData} = useGetImages();
+  const contentSizeHeight = useRef(0);
+  const [column, setColumn] = useState(2);
   const [quality, setQuality] = useState(true);
   const scrollY = useMemo(() => new Animated.Value(0), []);
   const headerHeight = useMemo(() => 70 + StatusBar.currentHeight, []);
-  const {width, height} = Dimensions.get('window');
+  const {width} = Dimensions.get('window');
 
   const fetchData = () => {
     getData();
@@ -23,21 +25,25 @@ function GalleryScreen() {
   const refreshData = () => {
     getData(true, GalleryRef);
   };
-
   useEffect(() => {
     fetchData();
   }, []);
 
-  const scroll = ({nativeEvent: {contentOffset}}) => {
+  const memoizedScroll = ({nativeEvent: {contentOffset}}) => {
     if (contentOffset.y < 0) {
-      return scrollY.setValue(0);
+      scrollY.setValue(0);
+    } else {
+      scrollY.setValue(contentOffset.y);
     }
-    scrollY.setValue(contentOffset.y);
-    if (contentOffset.y - totalHeight.current / 2 >= -2500) {
-      if (contentSizeHeight.current === totalHeight.current / 2) {
+
+    // ! this maybe broken, need to check it
+    let height = GalleryRef.current._scrollView.current._contentHeight;
+    // console.log(contentOffset.y);
+    if (height - contentOffset.y < 2500) {
+      if (contentSizeHeight.current === height) {
         return;
       }
-      contentSizeHeight.current = totalHeight.current / 2;
+      contentSizeHeight.current = height;
       fetchData();
     }
   };
@@ -52,10 +58,15 @@ function GalleryScreen() {
     [],
   );
 
-  const memoizedHeightGetter = useCallback((item) => item.image_height, []);
+  const memoizedHeightGetter = useCallback((element) => {
+    const {width: widthx} = Dimensions.get('window');
+    const diff = element.image_height / element.image_width;
+    const imageHeight = (widthx / column) * diff;
+    return imageHeight;
+  }, []);
 
   return (
-    <View style={{flex: 1}}>
+    <FlexView>
       <Navbar
         ListRef={GalleryRef}
         scrollY={scrollY}
@@ -70,12 +81,12 @@ function GalleryScreen() {
           ref={GalleryRef}
           heightForItem={memoizedHeightGetter}
           renderItem={memoizedRender}
-          numColumns={2}
+          numColumns={column}
           onRefresh={refreshData}
-          onScroll={scroll}
+          onScroll={memoizedScroll}
         />
       ) : null}
-    </View>
+    </FlexView>
   );
 }
 export default GalleryScreen;
