@@ -2,20 +2,24 @@ import styled from 'styled-components/native';
 import Animated from 'react-native-reanimated';
 import {StatusBar} from 'react-native';
 
+type HeaderProp = {
+  headerHeight: number;
+};
+
 export const InputView = styled.View`
   height: 45px;
   width: 95%;
-  background-color: #525e5b;
+  background-color: ${props => props.theme.secBackground};
   border-radius: 8px;
   flex-direction: row;
 `;
 
-export const StyledAnimated = styled(Animated.View)`
+export const StyledAnimated = styled(Animated.View)<HeaderProp>`
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
-  height: ${(props) => props.headerHeight}px;
+  height: ${props => props.headerHeight}px;
   z-index: 10000;
   align-items: center;
   justify-content: center;
@@ -33,10 +37,10 @@ export const StyledTouchable = styled.TouchableOpacity`
   align-content: center;
 `;
 
-export const ListView = styled.View`
+export const ListView = styled.View<HeaderProp>`
   width: 90%;
   position: absolute;
-  top: ${(props) => props.headerHeight}px;
+  top: ${props => props.headerHeight}px;
   left: 20px;
   right: 20px;
   z-index: 1000;
@@ -51,4 +55,8 @@ export const RowView = styled.View`
   height: 45px;
   align-items: center;
   flex-direction: row;
+`;
+
+export const Container = styled.View`
+  flex: 1;
 `;

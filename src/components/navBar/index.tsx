@@ -5,12 +5,19 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import {View, FlatList, TouchableOpacity, Text, Keyboard} from 'react-native';
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  Keyboard,
+  TextInput,
+} from 'react-native';
 import Animated from 'react-native-reanimated';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import autoCompleteRequest from '../../services/autoCompleteRequest';
 import {ParamsContext} from '../../contexts/paramsContext/context';
-import {FlexView} from '../Containers/';
+
 import {
   StyledAnimated,
   InputView,
@@ -18,7 +25,10 @@ import {
   ListView,
   StyledInput,
   RowView,
+  Container,
 } from './styles';
+import {FlexView} from '../Containers';
+import {DrawerActions, useNavigation} from '@react-navigation/native';
 
 type Props = {
   refreshingGallery: React.MutableRefObject<boolean>;
@@ -34,7 +44,8 @@ function Navbar({
   refreshingGallery,
 }: Props) {
   const {params, paramsDispatch} = useContext(ParamsContext);
-  const input = useRef(null);
+  const navigation = useNavigation();
+  const input = useRef<TextInput>(null);
   const [data, setData] = useState([]);
   const [inputText, setInputText] = useState('');
   const [toggleAnimation, setToggleAnimation] = useState(true);
@@ -64,9 +75,9 @@ function Navbar({
 
   const refresh = () => {
     refreshingGallery.current = true;
-    input.current.blur();
+    input.current?.blur();
     let tags = inputText.split(' ');
-    tags = tags.filter((tag) => tag !== '');
+    tags = tags.filter(tag => tag !== '');
     setInputText('');
 
     paramsDispatch({type: 'addTag', payload: tags});
@@ -90,7 +101,7 @@ function Navbar({
   );
 
   return (
-    <FlexView>
+    <Container>
       <StyledAnimated
         headerHeight={headerHeight}
         style={{
@@ -127,7 +138,7 @@ function Navbar({
             }}
             onBlur={() => setToggleAnimation(true)}
             ref={input}
-            onChangeText={(query) => {
+            onChangeText={query => {
               setInputText(query);
               if (query === '') {
                 return setData([]);
@@ -139,9 +150,11 @@ function Navbar({
           />
           <StyledTouchable
             onPress={() => {
-              input.current.clear();
+              input.current?.clear();
               Keyboard.dismiss();
               setData([]);
+
+              // navigation.dispatch(DrawerActions.toggleDrawer());
             }}>
             <MaterialIcons size={25} name={'close'} />
           </StyledTouchable>
@@ -157,7 +170,7 @@ function Navbar({
           />
         )}
       </ListView>
-    </FlexView>
+    </Container>
   );
 }
 

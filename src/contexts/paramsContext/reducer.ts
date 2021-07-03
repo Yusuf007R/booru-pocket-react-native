@@ -6,8 +6,6 @@ export const reducer = (state: ParamsType, action: Actions): ParamsType => {
       return {...state, page: state.page + 1};
     case 'resetPage':
       return {...state, page: 1};
-    case 'toggleSafeMode':
-      return {...state, safe: state.safe};
     case 'addTag':
       return {...state, arrayTags: [...state.arrayTags, ...action.payload]};
     case 'removeTag': {

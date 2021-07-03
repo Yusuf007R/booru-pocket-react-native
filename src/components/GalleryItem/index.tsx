@@ -4,9 +4,10 @@ import {StyledImg, StyledTouchableOpacity} from './styles';
 import get_url_extension from '../../utils/getUrlExtention';
 import FastImage from 'react-native-fast-image';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Data} from '../../services/fetchImage';
 
 interface Props {
-  data: [];
+  data: Data;
   quality: boolean;
 }
 
@@ -32,4 +33,4 @@ function Item({data, quality}: Props) {
     </StyledTouchableOpacity>
   );
 }
-export default React.memo(Item, () => false);
+export default React.memo(Item);

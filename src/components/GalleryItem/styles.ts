@@ -7,6 +7,7 @@ export const StyledImg = styled(FastImage)`
   height: 100%;
 `;
 
-export const StyledTouchableOpacity = styled.TouchableOpacity`
+export const StyledTouchableOpacity = styled.TouchableHighlight`
   flex: 1;
+  margin: 3px;
 `;

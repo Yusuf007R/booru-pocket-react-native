@@ -2,9 +2,11 @@ import {useContext, useState} from 'react';
 import fetchImage, {Data} from '../services/fetchImage';
 import {ParamsContext} from '../contexts/paramsContext/context';
 import {WaterfallList} from 'react-native-largelist-v3';
+import {SettingsContext} from '../contexts/settingsContext/context';
 
 export default function useGetImages() {
   const {params, paramsDispatch} = useContext(ParamsContext);
+  const {settings} = useContext(SettingsContext);
   const [data, setData] = useState<Data[]>([]);
   const [error, setError] = useState({});
 
@@ -20,7 +22,7 @@ export default function useGetImages() {
       paramsDispatch({type: 'resetPage'});
     }
     const requestParams = {limit: params.limit, page: pageNum, tags: ''};
-    if (params.safe) {
+    if (settings.safe) {
       arrayTagsCopy.push('rating:safe');
     }
     if (arrayTagsCopy.length) {

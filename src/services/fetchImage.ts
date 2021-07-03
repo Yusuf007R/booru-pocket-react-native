@@ -14,7 +14,7 @@ export interface Data {
   tag_string: string;
   is_note_locked: boolean;
   fav_count: number;
-  file_ext?: FileEXT;
+  file_ext: FileEXT;
   last_noted_at: Date | null;
   is_rating_locked: boolean;
   parent_id: number | null;

@@ -1,7 +1,7 @@
-import {create} from 'axios';
+import Axios from 'axios';
 import {baseUrl} from '../config/index';
 
-export const request = create({
+export const request = Axios.create({
   baseURL: baseUrl,
   timeout: 1500,
 });
