@@ -51,12 +51,11 @@ export const StyledInput = styled.TextInput`
   width: 100%;
 `;
 
-export const RowView = styled.View`
-  height: 45px;
-  align-items: center;
-  flex-direction: row;
-`;
-
 export const Container = styled.View`
   flex: 1;
+`;
+
+export const ItemContainer = styled.View`
+  background-color: ${({theme}) => theme.secBackground};
+  height: 40px;
 `;

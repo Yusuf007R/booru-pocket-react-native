@@ -6,14 +6,8 @@ export const reducer = (state: ParamsType, action: Actions): ParamsType => {
       return {...state, page: state.page + 1};
     case 'resetPage':
       return {...state, page: 1};
-    case 'addTag':
-      return {...state, arrayTags: [...state.arrayTags, ...action.payload]};
-    case 'removeTag': {
-      const tempParams = state.arrayTags.filter((_element, filterIndex) => {
-        return filterIndex !== action.payload;
-      });
-      return {...state, arrayTags: tempParams};
-    }
+    case 'changeTags':
+      return {...state, arrayTags: [...action.payload]};
     default:
       return state;
   }

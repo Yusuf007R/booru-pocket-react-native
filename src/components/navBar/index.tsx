@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from 'react';
 import {
-  View,
   FlatList,
   TouchableOpacity,
   Text,
@@ -24,11 +23,9 @@ import {
   StyledTouchable,
   ListView,
   StyledInput,
-  RowView,
   Container,
+  ItemContainer,
 } from './styles';
-import {FlexView} from '../Containers';
-import {DrawerActions, useNavigation} from '@react-navigation/native';
 
 type Props = {
   refreshingGallery: React.MutableRefObject<boolean>;
@@ -44,7 +41,6 @@ function Navbar({
   refreshingGallery,
 }: Props) {
   const {params, paramsDispatch} = useContext(ParamsContext);
-  const navigation = useNavigation();
   const input = useRef<TextInput>(null);
   const [data, setData] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -78,23 +74,28 @@ function Navbar({
     input.current?.blur();
     let tags = inputText.split(' ');
     tags = tags.filter(tag => tag !== '');
-    setInputText('');
-
-    paramsDispatch({type: 'addTag', payload: tags});
+    paramsDispatch({type: 'changeTags', payload: tags});
   };
 
   const memoizedRenderItem = useCallback(
     ({item}) => (
       <TouchableOpacity
         onPress={() => {
-          setInputText('');
+          let tagsString = '';
+          setInputText(prev => {
+            const lastIndex = prev.lastIndexOf(' ');
+            tagsString = prev
+              .substring(0, lastIndex + 1)
+              .concat(`${item.value} `);
+            return tagsString;
+          });
+          let tags = tagsString.split(' ').filter(tag => tag !== '');
           setData([]);
-
-          paramsDispatch({type: 'addTag', payload: [item.value]});
+          paramsDispatch({type: 'changeTags', payload: tags});
         }}>
-        <View style={{backgroundColor: 'gray', height: 40}}>
+        <ItemContainer>
           <Text>{item.label}</Text>
-        </View>
+        </ItemContainer>
       </TouchableOpacity>
     ),
     [],
@@ -108,27 +109,6 @@ function Navbar({
           transform: [{translateY: toggleAnimation ? translateY : 0}],
         }}>
         <InputView>
-          <RowView>
-            {params.arrayTags.map((item, index) => (
-              <RowView key={`${index}View`}>
-                <Text key={index} style={{marginLeft: 5}}>
-                  {item}
-                </Text>
-                <TouchableOpacity
-                  key={`${index}Touchable`}
-                  onPress={() => {
-                    paramsDispatch({type: 'removeTag', payload: index});
-                  }}>
-                  <MaterialIcons
-                    key={`${index}Icon`}
-                    size={20}
-                    name={'close'}
-                  />
-                </TouchableOpacity>
-              </RowView>
-            ))}
-          </RowView>
-
           <StyledInput
             onSubmitEditing={refresh}
             autoCapitalize={'none'}
@@ -143,6 +123,11 @@ function Navbar({
               if (query === '') {
                 return setData([]);
               }
+              const firstIndex = query.indexOf(' ');
+              if (firstIndex > 1) {
+                query = query.substring(firstIndex, query.length).trim();
+              }
+              console.log(query);
               AutoCompletefetch(query);
             }}
             value={inputText}
@@ -153,8 +138,6 @@ function Navbar({
               input.current?.clear();
               Keyboard.dismiss();
               setData([]);
-
-              // navigation.dispatch(DrawerActions.toggleDrawer());
             }}>
             <MaterialIcons size={25} name={'close'} />
           </StyledTouchable>

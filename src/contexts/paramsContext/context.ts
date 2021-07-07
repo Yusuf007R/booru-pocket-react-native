@@ -13,8 +13,7 @@ export type ParamContext = {
 export type Actions =
   | {type: 'incrementPage'}
   | {type: 'resetPage'}
-  | {type: 'addTag'; payload: string[]}
-  | {type: 'removeTag'; payload: number};
+  | {type: 'changeTags'; payload: string[]};
 
 const initialState: ParamContext = {
   params: {page: 1, limit: 30, arrayTags: []},
