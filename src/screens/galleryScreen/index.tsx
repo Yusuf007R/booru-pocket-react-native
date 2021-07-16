@@ -1,12 +1,11 @@
 import React, {
   useEffect,
-  useState,
   useRef,
   useCallback,
   useMemo,
   useContext,
 } from 'react';
-import {Dimensions, View, Switch, Button} from 'react-native';
+import {Dimensions, View} from 'react-native';
 import useGetImages from '../../hooks/useGetImages';
 import Animated from 'react-native-reanimated';
 import Navbar from '../../components/navBar';
@@ -18,7 +17,7 @@ import {Container} from './styles';
 import {SettingsContext} from '../../contexts/settingsContext/context';
 
 function GalleryScreen() {
-  const {settings, settingsDispatch} = useContext(SettingsContext);
+  const {settings} = useContext(SettingsContext);
   const GalleryRef = useRef<WaterfallList<Data>>(null);
   const refreshing = useRef(false);
   const {data, getData} = useGetImages();
@@ -49,7 +48,7 @@ function GalleryScreen() {
     if (GalleryRef.current) {
       // @ts-ignore
       const height = GalleryRef.current._scrollView.current._contentHeight;
-      if (height - contentOffset.y < 2500) {
+      if (height - contentOffset.y < 3500) {
         if (contentSizeHeight.current === height) {
           return;
         }
@@ -59,10 +58,7 @@ function GalleryScreen() {
     }
   };
 
-  const memoizedRender = useCallback(
-    item => <Item data={item} quality={settings.quality} />,
-    [settings.quality],
-  );
+  const RenderItem = item => <Item data={item} quality={settings.quality} />;
 
   const memoizedHeader = useCallback(() => {
     const {width} = Dimensions.get('window');
@@ -72,8 +68,7 @@ function GalleryScreen() {
   const memoizedHeightGetter = useCallback(element => {
     const {width} = Dimensions.get('window');
     const diff = element.image_height / element.image_width;
-    const imageHeight = (width / settings.column) * diff;
-    return imageHeight;
+    return (width / settings.column) * diff;
   }, []);
 
   return (
@@ -91,7 +86,7 @@ function GalleryScreen() {
           data={data}
           ref={GalleryRef}
           heightForItem={memoizedHeightGetter}
-          renderItem={memoizedRender}
+          renderItem={RenderItem}
           numColumns={settings.column}
           onRefresh={refreshData}
           onScroll={Scroll}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {StyledImg, StyledTouchableOpacity} from './styles';
-import get_url_extension from '../../utils/getUrlExtention';
+import parseData from '../../utils/parseData';
 import FastImage from 'react-native-fast-image';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {Data} from '../../services/fetchImage';
@@ -13,7 +13,7 @@ interface Props {
 
 function Item({data, quality}: Props) {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const {video, highQuality, lowQuality} = get_url_extension(data);
+  const {video, highQuality, lowQuality, SourceQuality} = parseData(data);
   return (
     <StyledTouchableOpacity
       onPress={() => {

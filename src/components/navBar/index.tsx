@@ -13,7 +13,7 @@ import {
   TextInput,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import autoCompleteRequest from '../../services/autoCompleteRequest';
 import {ParamsContext} from '../../contexts/paramsContext/context';
 
@@ -26,6 +26,7 @@ import {
   Container,
   ItemContainer,
 } from './styles';
+import {useNavigation} from '@react-navigation/native';
 
 type Props = {
   refreshingGallery: React.MutableRefObject<boolean>;
@@ -40,6 +41,8 @@ function Navbar({
   refreshGallery,
   refreshingGallery,
 }: Props) {
+  const navigation = useNavigation();
+
   const {params, paramsDispatch} = useContext(ParamsContext);
   const input = useRef<TextInput>(null);
   const [data, setData] = useState([]);
@@ -109,6 +112,13 @@ function Navbar({
           transform: [{translateY: toggleAnimation ? translateY : 0}],
         }}>
         <InputView>
+          <StyledTouchable
+            marginLeft={5}
+            onPress={() => {
+              navigation.toggleDrawer();
+            }}>
+            <Ionicons size={25} name={'menu'} />
+          </StyledTouchable>
           <StyledInput
             onSubmitEditing={refresh}
             autoCapitalize={'none'}
@@ -139,7 +149,7 @@ function Navbar({
               Keyboard.dismiss();
               setData([]);
             }}>
-            <MaterialIcons size={25} name={'close'} />
+            <Ionicons size={25} name={'close'} />
           </StyledTouchable>
         </InputView>
       </StyledAnimated>

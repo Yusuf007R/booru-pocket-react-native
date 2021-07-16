@@ -5,7 +5,7 @@ import {reducer} from './reducer';
 const ParamsContextProvider: React.FC = ({children}) => {
   const [params, paramsDispatch] = useReducer(reducer, {
     page: 1,
-    limit: 30,
+    limit: 50,
     arrayTags: [],
   });
 
