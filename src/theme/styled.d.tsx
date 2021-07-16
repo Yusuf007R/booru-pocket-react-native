@@ -7,5 +7,6 @@ declare module 'styled-components' {
     background: string;
     secBackground: string;
     textColor: string;
+    iconColor: string;
   }
 }
