@@ -8,5 +8,6 @@ declare module 'styled-components' {
     secBackground: string;
     textColor: string;
     iconColor: string;
+    iconBarColor: string;
   }
 }

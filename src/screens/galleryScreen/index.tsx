@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import {Dimensions, View} from 'react-native';
 import useGetImages from '../../hooks/useGetImages';
-import Animated from 'react-native-reanimated';
+
 import Navbar from '../../components/navBar';
 import Item from '../../components/GalleryItem';
 import {WaterfallList} from 'react-native-largelist-v3';
@@ -15,14 +15,16 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {Data} from '../../services/fetchImage';
 import {Container} from './styles';
 import {SettingsContext} from '../../contexts/settingsContext/context';
+import {ScrollValueContext} from '../../../App';
 
 function GalleryScreen() {
   const {settings} = useContext(SettingsContext);
+  const scrollY = useContext(ScrollValueContext);
   const GalleryRef = useRef<WaterfallList<Data>>(null);
   const refreshing = useRef(false);
   const {data, getData} = useGetImages();
   const contentSizeHeight = useRef(0);
-  const scrollY = useMemo(() => new Animated.Value(0), []);
+  // const scrollY = useMemo(() => new Animated.Value(0), []);
   const headerHeight = useMemo(() => 70 + getStatusBarHeight(), []);
 
   const fetchData = () => {
@@ -36,7 +38,7 @@ function GalleryScreen() {
   useEffect(() => {
     fetchData();
   }, []);
-
+  // @ts-ignore
   const Scroll = ({nativeEvent: {contentOffset}}) => {
     if (contentOffset.y < 0) {
       scrollY.setValue(0);
@@ -58,7 +60,9 @@ function GalleryScreen() {
     }
   };
 
-  const RenderItem = item => <Item data={item} quality={settings.quality} />;
+  const RenderItem = (item: Data) => (
+    <Item data={item} quality={settings.quality} />
+  );
 
   const memoizedHeader = useCallback(() => {
     const {width} = Dimensions.get('window');
@@ -80,6 +84,7 @@ function GalleryScreen() {
         //! I think this is not needed anymore
         refreshingGallery={refreshing}
       />
+
       {data.length ? (
         <WaterfallList
           renderHeader={memoizedHeader}
