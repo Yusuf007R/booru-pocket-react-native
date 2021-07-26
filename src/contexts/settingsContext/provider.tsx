@@ -1,18 +1,31 @@
-import React, {useReducer} from 'react';
-import {SettingsContext} from './context';
+import React, {useEffect, useReducer} from 'react';
+import {defaultSettings, SettingsContext, SettingsType} from './context';
 import {reducer} from './reducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsContextProvider: React.FC = ({children}) => {
-  const [settings, settingsDispatch] = useReducer(reducer, {
-    safe: true,
-    quality: true,
-    darkTheme: false,
-    column: 2,
-  });
+  const [settings, settingsDispatch] = useReducer(reducer, undefined!);
+
+  useEffect(() => {
+    (async () => {
+      const data = await AsyncStorage.getItem('settings');
+      const dataObject: SettingsType = JSON.parse(data!);
+      settingsDispatch({
+        type: 'loadSettings',
+        payload: dataObject ? dataObject : defaultSettings,
+      });
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (settings) {
+      AsyncStorage.setItem('settings', JSON.stringify(settings));
+    }
+  }, [settings]);
 
   return (
     <SettingsContext.Provider value={{settings, settingsDispatch}}>
-      {children}
+      {settings && children}
     </SettingsContext.Provider>
   );
 };

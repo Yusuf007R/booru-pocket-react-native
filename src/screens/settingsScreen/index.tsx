@@ -1,11 +1,15 @@
 import React, {useContext} from 'react';
 import {Container, OptionContainer, StyledText} from './styles';
 import {Switch} from 'react-native';
-import {SettingsContext} from '../../contexts/settingsContext/context';
-import {ThemeContext} from 'styled-components/native';
-import {Divider} from '../../components/Divider';
+import {Actions, SettingsContext} from '../../contexts/settingsContext/context';
+import {DefaultTheme, ThemeContext} from 'styled-components/native';
 
-const SwitchComponent = props => {
+const SwitchComponent = (props: {
+  theme: DefaultTheme;
+  value: boolean;
+  dispatcher: React.Dispatch<Actions>;
+  payload: Actions;
+}) => {
   return (
     <Switch
       trackColor={{false: '#949494', true: props.theme.main}}
@@ -16,7 +20,7 @@ const SwitchComponent = props => {
     />
   );
 };
-function SettingsScreen(props) {
+function SettingsScreen() {
   const {settings, settingsDispatch} = useContext(SettingsContext);
   const themeContext = useContext(ThemeContext);
 
@@ -31,7 +35,6 @@ function SettingsScreen(props) {
           payload={{type: 'toggleQuality'}}
         />
       </OptionContainer>
-      {/* <Divider /> */}
       <OptionContainer>
         <StyledText>Toggle Safe Mode</StyledText>
         <SwitchComponent
@@ -41,7 +44,6 @@ function SettingsScreen(props) {
           payload={{type: 'toggleSafeMode'}}
         />
       </OptionContainer>
-      {/* <Divider /> */}
       <OptionContainer>
         <StyledText>Toggle Theme</StyledText>
         <SwitchComponent
@@ -51,7 +53,6 @@ function SettingsScreen(props) {
           payload={{type: 'toggleDarkTheme'}}
         />
       </OptionContainer>
-      {/* <Divider /> */}
     </Container>
   );
 }

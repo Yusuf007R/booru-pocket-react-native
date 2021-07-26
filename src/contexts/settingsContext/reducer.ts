@@ -10,6 +10,8 @@ export const reducer = (state: SettingsType, action: Actions): SettingsType => {
       return {...state, darkTheme: !state.darkTheme};
     case 'setColumn':
       return {...state, column: action.payload};
+    case 'loadSettings':
+      return {...action.payload};
     default:
       return state;
   }

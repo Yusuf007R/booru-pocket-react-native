@@ -5,10 +5,15 @@ import {StyledImg, Container} from './styles';
 import VideoPlayer from 'react-native-video-controls';
 import FastImage from 'react-native-fast-image';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import {StackTypes} from '../../router';
+import {RouteProp} from '@react-navigation/native';
 
-export default function ImageScreen(props) {
+export default function ImageScreen(props: {
+  route: RouteProp<StackTypes, 'IMG'>;
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [rerender, setRerender] = useState(1);
-  const {video, highQuality, lowQuality} = props.route.params;
+  const {video, highQuality} = props.route.params;
 
   useEffect(() => {
     if (video) {

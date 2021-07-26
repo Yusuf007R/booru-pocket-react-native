@@ -12,19 +12,24 @@ import Navbar from '../../components/navBar';
 import Item from '../../components/GalleryItem';
 import {WaterfallList} from 'react-native-largelist-v3';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
-import {Data} from '../../services/fetchImage';
 import {Container} from './styles';
 import {SettingsContext} from '../../contexts/settingsContext/context';
 import {ScrollValueContext} from '../../../App';
+import {Data} from '../../services/danbooru.types';
+import useParams from '../../hooks/useParams';
+import {RouteProp} from '@react-navigation/native';
+import {DrawerTypes} from '../../router';
 
-function GalleryScreen() {
+type RouteType = RouteProp<DrawerTypes, 'Gallery'>;
+
+function GalleryScreen(props: {route: RouteType}) {
+  const paramsObject = useParams(props.route.params);
   const {settings} = useContext(SettingsContext);
   const scrollY = useContext(ScrollValueContext);
   const GalleryRef = useRef<WaterfallList<Data>>(null);
   const refreshing = useRef(false);
-  const {data, getData} = useGetImages();
+  const {data, getData} = useGetImages(paramsObject);
   const contentSizeHeight = useRef(0);
-  // const scrollY = useMemo(() => new Animated.Value(0), []);
   const headerHeight = useMemo(() => 70 + getStatusBarHeight(), []);
 
   const fetchData = () => {
@@ -83,6 +88,8 @@ function GalleryScreen() {
         refreshGallery={refreshData}
         //! I think this is not needed anymore
         refreshingGallery={refreshing}
+        paramsObject={paramsObject}
+        drawer={props.route.params.drawer}
       />
 
       {data.length ? (

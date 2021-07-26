@@ -1,7 +1,7 @@
 import {DefaultTheme} from 'styled-components';
 
 export const darkTheme: DefaultTheme = {
-  main: '#eb638c',
+  main: '#bb2961',
   background: '#0a2b3f',
   secBackground: '#8a98a8',
   textColor: '#ebebeb',
@@ -10,10 +10,10 @@ export const darkTheme: DefaultTheme = {
 };
 
 export const lightTheme: DefaultTheme = {
-  main: '#eb638c',
+  main: '#bb2961',
   background: '#fbf8f8',
   secBackground: '#8a98a8',
   textColor: '#111111',
   iconColor: '#3b3b3b',
-  iconBarColor: '#ebebeb',
+  iconBarColor: '#6e6c6c',
 };

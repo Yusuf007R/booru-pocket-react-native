@@ -4,7 +4,8 @@ import {StyledImg, StyledTouchableOpacity} from './styles';
 import parseData from '../../utils/parseData';
 import FastImage from 'react-native-fast-image';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {Data} from '../../services/fetchImage';
+import {Data} from '../../services/danbooru.types';
+import {StackTypes} from '../../router';
 
 interface Props {
   data: Data;
@@ -12,7 +13,7 @@ interface Props {
 }
 
 function Item({data, quality}: Props) {
-  const navigation = useNavigation<StackNavigationProp<any>>();
+  const navigation = useNavigation<StackNavigationProp<StackTypes>>();
   const {video, highQuality, lowQuality, SourceQuality} = parseData(data);
   return (
     <StyledTouchableOpacity
@@ -20,8 +21,9 @@ function Item({data, quality}: Props) {
         navigation.push('IMG', {
           data: data,
           video,
-          highQuality,
-          lowQuality,
+          highQuality: highQuality!,
+          lowQuality: lowQuality!,
+          SourceQuality: SourceQuality!,
         });
       }}>
       <StyledImg

@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useContext,
-  useCallback,
-} from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {
   FlatList,
   TouchableOpacity,
@@ -14,8 +8,6 @@ import {
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import autoCompleteRequest from '../../services/autoCompleteRequest';
-import {ParamsContext} from '../../contexts/paramsContext/context';
 
 import {
   StyledAnimated,
@@ -27,12 +19,19 @@ import {
   ItemContainer,
 } from './styles';
 import {useNavigation} from '@react-navigation/native';
+import {DanBooru} from '../../services/danbooru';
+import {useParamsType} from '../../hooks/useParams';
+import {HeaderBackButton} from '@react-navigation/stack';
+import {DrawerNavigationProp} from '@react-navigation/drawer';
+import {DrawerTypes} from '../../router';
 
 type Props = {
   refreshingGallery: React.MutableRefObject<boolean>;
   refreshGallery: () => void;
   headerHeight: number;
   scrollY: Animated.Value<0>;
+  paramsObject: useParamsType;
+  drawer: boolean;
 };
 
 function Navbar({
@@ -40,13 +39,17 @@ function Navbar({
   scrollY,
   refreshGallery,
   refreshingGallery,
+  paramsObject,
+  drawer,
 }: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<DrawerNavigationProp<DrawerTypes>>();
+  const Danbooru = new DanBooru();
 
-  const {params, paramsDispatch} = useContext(ParamsContext);
+  // const {params, paramsDispatch} = useContext(ParamsContext);
+  const {params, paramsDispatch} = paramsObject;
   const input = useRef<TextInput>(null);
   const [data, setData] = useState([]);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState(params.arrayTags.join(' '));
   const [toggleAnimation, setToggleAnimation] = useState(true);
   const diffClamp = Animated.diffClamp(scrollY, 0, headerHeight);
   const translateY = Animated.interpolate(diffClamp, {
@@ -55,7 +58,7 @@ function Navbar({
   });
 
   const AutoCompletefetch = async (query: string) => {
-    const result = await autoCompleteRequest(query);
+    const result = await Danbooru.autoCompleteRequest(query);
     setData(result);
   };
 
@@ -112,13 +115,18 @@ function Navbar({
           transform: [{translateY: toggleAnimation ? translateY : 0}],
         }}>
         <InputView>
-          <StyledTouchable
-            marginLeft={5}
-            onPress={() => {
-              navigation.toggleDrawer();
-            }}>
-            <Ionicons size={25} name={'menu'} />
-          </StyledTouchable>
+          {drawer ? (
+            <StyledTouchable
+              marginLeft={5}
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}>
+              <Ionicons size={25} name={'menu'} />
+            </StyledTouchable>
+          ) : (
+            <HeaderBackButton onPress={() => navigation.goBack()} />
+          )}
+
           <StyledInput
             onSubmitEditing={refresh}
             autoCapitalize={'none'}
@@ -137,7 +145,6 @@ function Navbar({
               if (firstIndex > 1) {
                 query = query.substring(firstIndex, query.length).trim();
               }
-              console.log(query);
               AutoCompletefetch(query);
             }}
             value={inputText}
@@ -158,7 +165,7 @@ function Navbar({
           <FlatList
             keyboardShouldPersistTaps={'handled'}
             data={data}
-            keyExtractor={(item, index) => String(index)}
+            keyExtractor={(_, index) => String(index)}
             renderItem={memoizedRenderItem}
           />
         )}
