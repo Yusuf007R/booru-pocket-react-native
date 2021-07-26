@@ -1,5 +1,3 @@
-import {request} from '../utils/request';
-
 export interface Data {
   id?: number;
   created_at: Date;
@@ -64,23 +62,13 @@ export enum Rating {
   S = 's',
 }
 
-type Params = {
+export type Params = {
   limit: number;
   page: number;
   tags: string;
 };
 
-const fetchImage = async (params: Params): Promise<Data[]> => {
-  const urlParams = new URLSearchParams(params as any);
-  try {
-    const data = await request({
-      method: 'get',
-      url: '/posts.json',
-      params: urlParams,
-    });
-    return data.data;
-  } catch (err) {
-    return err;
-  }
+export type authType = {
+  username: string;
+  password: string;
 };
-export default fetchImage;
