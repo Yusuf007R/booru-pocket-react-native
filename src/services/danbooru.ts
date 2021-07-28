@@ -1,6 +1,7 @@
-import {authType, Data, Params} from './danbooru.types';
+import {authType, Data, Params, UserDanbooruType} from './danbooru.types';
 import Axios from 'axios';
 import {baseUrl} from '../config/index';
+import {UserType} from '../contexts/userContext/context';
 
 export class DanBooru {
   auth!: authType;
@@ -21,7 +22,23 @@ export class DanBooru {
       });
       return data.data;
     } catch (err) {
-      return err;
+      throw new Error(err);
+    }
+  };
+
+  getUserInfo = async ({
+    username,
+    apiKey,
+  }: UserType): Promise<UserDanbooruType> => {
+    try {
+      const data = await this.request({
+        method: 'get',
+        url: '/profile.json',
+        auth: {username, password: apiKey},
+      });
+      return data.data;
+    } catch (err) {
+      throw new Error(err);
     }
   };
 
@@ -40,7 +57,7 @@ export class DanBooru {
 
       return data.data;
     } catch (err) {
-      return err;
+      throw new Error(err);
     }
   };
 

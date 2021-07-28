@@ -1,14 +1,17 @@
 import React, {useContext} from 'react';
 import {Container, OptionContainer, StyledText} from './styles';
 import {Switch} from 'react-native';
-import {Actions, SettingsContext} from '../../contexts/settingsContext/context';
+import {
+  SettingsActions,
+  SettingsContext,
+} from '../../contexts/settingsContext/context';
 import {DefaultTheme, ThemeContext} from 'styled-components/native';
 
 const SwitchComponent = (props: {
   theme: DefaultTheme;
   value: boolean;
-  dispatcher: React.Dispatch<Actions>;
-  payload: Actions;
+  dispatcher: React.Dispatch<SettingsActions>;
+  payload: SettingsActions;
 }) => {
   return (
     <Switch

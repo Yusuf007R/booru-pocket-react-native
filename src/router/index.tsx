@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   createStackNavigator,
   HeaderBackButton,
@@ -11,20 +11,53 @@ import ImageScreen from '../screens/ImageScreen';
 import SettingsScreen from '../screens/settingsScreen';
 import {ThemeContext} from 'styled-components';
 import DrawerContent from '../components/Navigation/DrawerContent';
-import {
-  createBottomTabNavigator,
-  BottomTabBar,
-} from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import BottomBarIcon from '../components/Navigation/BottomBarIcon';
 import {ScrollValueContext} from '../../App';
 import Animated from 'react-native-reanimated';
+import BottomBar from '../components/Navigation/BottomBar';
+import {Data} from '../services/danbooru.types';
+import AccountScreen from '../screens/accountScreen';
+import WIP from '../screens/WIP';
 
-const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
+export type GalleryTypes = {tags: string[]; drawer: boolean};
+
+export type StackTypes = {
+  Gallery: GalleryTypes;
+  Home: undefined;
+  Settings: undefined;
+  IMG: {
+    data: Data;
+    video: boolean;
+    highQuality: string;
+    lowQuality: string;
+    SourceQuality: string;
+  };
+  Account: undefined;
+};
+export type DrawerTypes = {
+  HomeGallery: GalleryTypes;
+};
+
+const Stack = createStackNavigator<StackTypes>();
+const Drawer = createDrawerNavigator<DrawerTypes>();
 const Tab = createBottomTabNavigator();
 
-function Navigation() {
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator
+      backBehavior={'initialRoute'}
+      drawerType={'front'}
+      // openByDefault
+      drawerContent={_ => <DrawerContent />}
+      initialRouteName="HomeGallery">
+      <Drawer.Screen name="HomeGallery" component={BottomBarNavigator} />
+    </Drawer.Navigator>
+  );
+};
+
+const BottomBarNavigator = () => {
   const themeContext = useContext(ThemeContext);
   const scrollY = useContext(ScrollValueContext);
   const diffClamp = Animated.diffClamp(scrollY, 0, 70);
@@ -32,6 +65,66 @@ function Navigation() {
     inputRange: [0, 70],
     outputRange: [0, 70],
   });
+  return (
+    <Tab.Navigator
+      tabBar={props => {
+        return <BottomBar translateY={translateY} bottomBarProps={props} />;
+      }}
+      tabBarOptions={{
+        showLabel: false,
+        style: {
+          backgroundColor: themeContext.background,
+          height: 55,
+          borderTopColor: 'transparent',
+        },
+      }}>
+      <Tab.Screen
+        initialParams={{drawer: true}}
+        name="Posts"
+        options={{
+          tabBarIcon: ({focused}) => (
+            <BottomBarIcon name="Posts" focus={focused} icon={'images'} />
+          ),
+        }}
+        component={galleryScreen}
+      />
+      <Tab.Screen
+        name="Popular"
+        options={{
+          tabBarIcon: ({focused}) => (
+            <BottomBarIcon name="Popular" focus={focused} icon={'flame'} />
+          ),
+        }}
+        component={WIP}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: ({focused}) => (
+            <BottomBarIcon
+              name="Recommended"
+              focus={focused}
+              icon={'heart-circle'}
+            />
+          ),
+        }}
+        name="Recommended"
+        component={WIP}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: ({focused}) => (
+            <BottomBarIcon name="Tags" focus={focused} icon={'pricetag'} />
+          ),
+        }}
+        name="Tags"
+        component={WIP}
+      />
+    </Tab.Navigator>
+  );
+};
+
+function Navigation() {
+  const themeContext = useContext(ThemeContext);
 
   const options = ({navigation}: {navigation: StackNavigationProp<any>}) => ({
     gestureEnabled: false,
@@ -50,86 +143,6 @@ function Navigation() {
     ),
   });
 
-  const DrawerNavigator = () => {
-    return (
-      <Drawer.Navigator
-        backBehavior={'initialRoute'}
-        drawerType={'front'}
-        // openByDefault
-        drawerContent={_ => <DrawerContent />}
-        initialRouteName="Gallery">
-        <Drawer.Screen name="Gallery" component={BottomBarNavigator} />
-      </Drawer.Navigator>
-    );
-  };
-
-  const BottomBarNavigator = () => {
-    return (
-      <Tab.Navigator
-        tabBar={props => {
-          return (
-            <Animated.View
-              style={{
-                transform: [{translateY}],
-                position: 'absolute',
-                bottom: 0,
-                width: '100%',
-                height: 65,
-              }}>
-              <BottomTabBar {...props} />
-            </Animated.View>
-          );
-        }}
-        tabBarOptions={{
-          showLabel: false,
-          style: {
-            backgroundColor: themeContext.background,
-          },
-        }}>
-        <Tab.Screen
-          name="Posts"
-          options={{
-            tabBarIcon: ({focused}) => (
-              <BottomBarIcon name="Posts" focus={focused} icon={'images'} />
-            ),
-          }}
-          component={galleryScreen}
-        />
-        <Tab.Screen
-          name="Popular"
-          options={{
-            tabBarIcon: ({focused}) => (
-              <BottomBarIcon name="Popular" focus={focused} icon={'flame'} />
-            ),
-          }}
-          component={galleryScreen}
-        />
-        <Tab.Screen
-          options={{
-            tabBarIcon: ({focused}) => (
-              <BottomBarIcon
-                name="Recommended"
-                focus={focused}
-                icon={'heart-circle'}
-              />
-            ),
-          }}
-          name="Recommended"
-          component={galleryScreen}
-        />
-        <Tab.Screen
-          options={{
-            tabBarIcon: ({focused}) => (
-              <BottomBarIcon name="Tags" focus={focused} icon={'pricetag'} />
-            ),
-          }}
-          name="Tags"
-          component={galleryScreen}
-        />
-      </Tab.Navigator>
-    );
-  };
-
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -147,6 +160,16 @@ function Navigation() {
           name="Settings"
           options={options}
           component={SettingsScreen}
+        />
+        <Stack.Screen
+          name="Gallery"
+          options={{headerShown: false}}
+          component={galleryScreen}
+        />
+        <Stack.Screen
+          name="Account"
+          options={options}
+          component={AccountScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

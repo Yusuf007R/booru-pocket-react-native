@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 export const IconContainer = styled.View`
   justify-content: center;
   align-items: center;
+  width: 80px;
 `;
 
 interface LabelProps {
@@ -10,6 +11,6 @@ interface LabelProps {
 }
 
 export const Label = styled.Text<LabelProps>`
-  font-size: 9px;
+  font-size: 10px;
   color: ${({focus, theme}) => (focus ? theme.main : theme.textColor)};
 `;

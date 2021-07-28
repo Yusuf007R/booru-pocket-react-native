@@ -1,6 +1,9 @@
-import {Actions, SettingsType} from './context';
+import {SettingsActions, SettingsType} from './context';
 
-export const reducer = (state: SettingsType, action: Actions): SettingsType => {
+export const reducer = (
+  state: SettingsType,
+  action: SettingsActions,
+): SettingsType => {
   switch (action.type) {
     case 'toggleQuality':
       return {...state, quality: !state.quality};

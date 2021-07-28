@@ -38,6 +38,7 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
         const FilteredResult = result.filter(
           element => element.large_file_url || element.preview_file_url,
         );
+
         if (refresh) {
           setData([...FilteredResult]);
           ref?.current?.endRefresh();

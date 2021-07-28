@@ -8,12 +8,12 @@ export type SettingsType = {
   limit: number;
 };
 
-export type settingsContext = {
+export type settingsContextType = {
   settings: SettingsType;
-  settingsDispatch: React.Dispatch<Actions>;
+  settingsDispatch: React.Dispatch<SettingsActions>;
 };
 
-export type Actions =
+export type SettingsActions =
   | {type: 'toggleQuality'}
   | {type: 'resetPage'}
   | {type: 'toggleSafeMode'}
@@ -29,10 +29,10 @@ export const defaultSettings: SettingsType = {
   limit: 50,
 };
 
-const initialState: settingsContext = {
+const initialState: settingsContextType = {
   settings: defaultSettings,
   settingsDispatch: () => undefined,
 };
 
 export const SettingsContext =
-  React.createContext<settingsContext>(initialState);
+  React.createContext<settingsContextType>(initialState);

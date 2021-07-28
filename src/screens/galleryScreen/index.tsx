@@ -20,10 +20,10 @@ import useParams from '../../hooks/useParams';
 import {RouteProp} from '@react-navigation/native';
 import {DrawerTypes} from '../../router';
 
-type RouteType = RouteProp<DrawerTypes, 'Gallery'>;
+type RouteType = RouteProp<DrawerTypes, 'HomeGallery'>;
 
-function GalleryScreen(props: {route: RouteType}) {
-  const paramsObject = useParams(props.route.params);
+function GalleryScreen({route}: {route: RouteType}) {
+  const paramsObject = useParams(route.params);
   const {settings} = useContext(SettingsContext);
   const scrollY = useContext(ScrollValueContext);
   const GalleryRef = useRef<WaterfallList<Data>>(null);
@@ -89,7 +89,7 @@ function GalleryScreen(props: {route: RouteType}) {
         //! I think this is not needed anymore
         refreshingGallery={refreshing}
         paramsObject={paramsObject}
-        drawer={props.route.params.drawer}
+        drawer={route.params.drawer}
       />
 
       {data.length ? (

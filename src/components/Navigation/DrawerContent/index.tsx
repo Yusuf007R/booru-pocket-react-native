@@ -1,5 +1,5 @@
 import DrawerItem from '../DrawerItem';
-import React from 'react';
+import React, {useContext} from 'react';
 import {Divider} from '../../Divider';
 import {
   Container,
@@ -11,16 +11,21 @@ import {
   TopContent,
 } from './styles';
 import {useNavigation} from '@react-navigation/native';
-import {Linking} from 'react-native';
+import {Alert, Linking, View} from 'react-native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {StackTypes} from '../../../router';
+import {UserContext} from '../../../contexts/userContext/context';
 
 function DrawerContent() {
-  const navigation = useNavigation();
+  const {user} = useContext(UserContext);
+
+  const navigation = useNavigation<StackNavigationProp<StackTypes>>();
 
   return (
     <Container>
       <HeadContainer>
         <TitleContainer>
-          <Title>BooruPocket</Title>
+          <Title>BooruPOCKET</Title>
         </TitleContainer>
         <Divider />
       </HeadContainer>
@@ -30,14 +35,20 @@ function DrawerContent() {
             iconName="person-circle"
             text="Accounts"
             onPress={() => {
-              console.log('pressed');
+              navigation.navigate('Account');
             }}
           />
           <DrawerItem
             iconName="heart"
             text="Favorites"
             onPress={() => {
-              console.log('pressed');
+              if (user) {
+                return navigation.navigate('Gallery', {
+                  tags: [`fav:${user.username}`],
+                  drawer: false,
+                });
+              }
+              Alert.alert('Auth', 'you need to login before using this option');
             }}
           />
           <DrawerItem
@@ -62,32 +73,34 @@ function DrawerContent() {
             }}
           />
         </TopContent>
-        <Divider />
-        <BottomContent>
-          <DrawerItem
-            iconName="logo-github"
-            text="Github"
-            onPress={() => {
-              Linking.openURL(
-                'https://github.com/Yusuf007R/booru-pocket-react-native',
-              );
-            }}
-          />
-          <DrawerItem
-            iconName="settings-outline"
-            text="Settings"
-            onPress={() => {
-              navigation.navigate('Settings');
-            }}
-          />
-          <DrawerItem
-            iconName="information-circle-outline"
-            text="About"
-            onPress={() => {
-              console.log('pressed');
-            }}
-          />
-        </BottomContent>
+        <View>
+          <Divider />
+          <BottomContent>
+            <DrawerItem
+              iconName="logo-github"
+              text="Github"
+              onPress={() => {
+                Linking.openURL(
+                  'https://github.com/Yusuf007R/booru-pocket-react-native',
+                );
+              }}
+            />
+            <DrawerItem
+              iconName="settings-outline"
+              text="Settings"
+              onPress={() => {
+                navigation.navigate('Settings');
+              }}
+            />
+            <DrawerItem
+              iconName="information-circle-outline"
+              text="About"
+              onPress={() => {
+                console.log('pressed');
+              }}
+            />
+          </BottomContent>
+        </View>
       </BodyContainer>
     </Container>
   );
