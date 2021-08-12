@@ -3,7 +3,6 @@ import {Data} from '../services/danbooru.types';
 export default function parseData(data: Data) {
   const SourceQuality =
     data.file_url || data.large_file_url || data.preview_file_url;
-
   const highQuality =
     data.large_file_url || data.preview_file_url || data.file_url;
   const lowQuality =

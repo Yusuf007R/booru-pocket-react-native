@@ -11,9 +11,3 @@ export const StyledImg = styled(FastImage)`
 export const StyledImgZoom = styled(ImageZoom)`
   flex: 1;
 `;
-export const Container = styled.View`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  background-color: ${props => props.theme.background};
-`;

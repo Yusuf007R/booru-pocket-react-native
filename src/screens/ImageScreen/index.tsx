@@ -1,36 +1,27 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Dimensions, ActivityIndicator} from 'react-native';
-import {StyledImg, Container} from './styles';
-
+import React, {useCallback} from 'react';
+import {ActivityIndicator} from 'react-native';
+import {StyledImg} from './styles';
+import {Container} from '../../components/Containers';
 import VideoPlayer from 'react-native-video-controls';
 import FastImage from 'react-native-fast-image';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import {StackTypes} from '../../router';
 import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {useContext} from 'react';
+import {ThemeContext} from 'styled-components/native';
 
-export default function ImageScreen(props: {
+type Props = {
+  navigation: StackNavigationProp<StackTypes>;
   route: RouteProp<StackTypes, 'IMG'>;
-}) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [rerender, setRerender] = useState(1);
+};
+
+export default function ImageScreen(props: Props) {
+  const theme = useContext(ThemeContext);
   const {video, highQuality} = props.route.params;
 
-  useEffect(() => {
-    if (video) {
-      return;
-    }
-    function reRender() {
-      setRerender(prev => prev + 1);
-    }
-
-    Dimensions.addEventListener('change', reRender);
-    return () => {
-      Dimensions.removeEventListener('change', reRender);
-    };
-  }, []);
-
   const memoizedLoading = useCallback(
-    () => <ActivityIndicator size="large" color="#C2185B" />,
+    () => <ActivityIndicator size="large" color={theme.main} />,
     [],
   );
 
@@ -45,6 +36,7 @@ export default function ImageScreen(props: {
     <Container>
       {video ? (
         <VideoPlayer
+          navigator={props.navigation}
           source={{
             uri: highQuality,
           }}

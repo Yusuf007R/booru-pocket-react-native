@@ -30,7 +30,7 @@ export const reducer = (state: ParamsType, action: Actions): ParamsType => {
 
 export default function useParams(routeParams: GalleryTypes): useParamsType {
   let arrayTags: string[] = [];
-  if (routeParams.tags) {
+  if (routeParams && routeParams.tags) {
     arrayTags = arrayTags.concat(routeParams.tags);
   }
 

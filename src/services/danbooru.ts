@@ -1,7 +1,8 @@
 import {authType, Data, Params, UserDanbooruType} from './danbooru.types';
 import Axios from 'axios';
-import {baseUrl} from '../config/index';
+import {baseUrl, SafebaseUrl} from '../config/index';
 import {UserType} from '../contexts/userContext/context';
+import {OptionType} from '../components/NavBar/PopularNavBar';
 
 export class DanBooru {
   auth!: authType;
@@ -11,7 +12,12 @@ export class DanBooru {
     timeout: 1500,
   });
 
-  fetchImage = async (params: Params): Promise<Data[]> => {
+  safeMode = (safe: boolean) => {
+    this.request.defaults.baseURL = safe ? SafebaseUrl : baseUrl;
+  };
+
+  fetchImage = async (params: Params, safe: boolean): Promise<Data[]> => {
+    this.safeMode(safe);
     const urlParams = new URLSearchParams(params as any);
     try {
       const data = await this.request({
@@ -55,6 +61,29 @@ export class DanBooru {
         },
       });
 
+      return data.data;
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
+
+  fetchPopularImage = async (
+    params: {
+      date: string;
+      scale: OptionType;
+      page: number;
+      limit: number;
+    },
+    safe: boolean,
+  ): Promise<Data[]> => {
+    try {
+      this.safeMode(safe);
+      const data = await this.request({
+        method: 'get',
+        url: '/explore/posts/popular.json',
+        auth: this.auth ? this.auth : undefined,
+        params: params,
+      });
       return data.data;
     } catch (err) {
       throw new Error(err);

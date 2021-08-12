@@ -1,6 +1,7 @@
 import React from 'react';
 
-import {Container, StyledText} from './styles';
+import {StyledText} from './styles';
+import {Container} from '../../components/Containers';
 
 function WIP() {
   return (

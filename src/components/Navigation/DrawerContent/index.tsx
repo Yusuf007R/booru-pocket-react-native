@@ -2,7 +2,6 @@ import DrawerItem from '../DrawerItem';
 import React, {useContext} from 'react';
 import {Divider} from '../../Divider';
 import {
-  Container,
   Title,
   TitleContainer,
   HeadContainer,
@@ -10,6 +9,8 @@ import {
   BottomContent,
   TopContent,
 } from './styles';
+import {Container} from '../../Containers';
+
 import {useNavigation} from '@react-navigation/native';
 import {Alert, Linking, View} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';

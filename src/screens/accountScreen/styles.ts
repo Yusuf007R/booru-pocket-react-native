@@ -4,11 +4,6 @@ type LabelProps = {
   size: number;
 };
 
-export const Container = styled.View`
-  flex: 1;
-  background-color: ${props => props.theme.background};
-`;
-
 export const Label = styled.Text<LabelProps>`
   color: ${({theme}) => theme.textColor};
   font-size: ${({size}) => size}px;
@@ -33,6 +28,7 @@ export const StyledInput = styled.TextInput`
   width: 85%;
   height: 50px;
   border-radius: 15px;
+  padding-left: 12px;
 `;
 
 export const LabelContainer = styled.View`

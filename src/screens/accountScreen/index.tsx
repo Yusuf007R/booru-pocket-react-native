@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
   Body,
-  Container,
   Head,
   LabelContainer,
   Label,
@@ -10,7 +9,7 @@ import {
   ProfileItemContainer,
   LogoutToucheable,
 } from './styles';
-
+import {Container} from '../../components/Containers';
 import {ThemeContext} from 'styled-components';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackTypes} from '../../router';
@@ -120,6 +119,7 @@ function AccountScreen({navigation}: Props) {
               <Label size={14}>API key</Label>
             </LabelContainer>
             <StyledInput
+              secureTextEntry={true}
               value={userInfo.apiKey}
               onChangeText={query =>
                 setUserInfo(prev => ({...prev, apiKey: query}))

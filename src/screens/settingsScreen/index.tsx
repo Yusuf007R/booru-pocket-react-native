@@ -1,11 +1,12 @@
 import React, {useContext} from 'react';
-import {Container, OptionContainer, StyledText} from './styles';
+import {OptionContainer, StyledText} from './styles';
 import {Switch} from 'react-native';
 import {
   SettingsActions,
   SettingsContext,
 } from '../../contexts/settingsContext/context';
 import {DefaultTheme, ThemeContext} from 'styled-components/native';
+import {Container} from '../../components/Containers';
 
 const SwitchComponent = (props: {
   theme: DefaultTheme;
