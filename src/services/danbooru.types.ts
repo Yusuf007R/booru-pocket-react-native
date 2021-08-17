@@ -156,3 +156,12 @@ export interface UserDanbooruType {
   neutral_feedback_count: number;
   negative_feedback_count: number;
 }
+
+export interface AutoCompleteType {
+  type: string;
+  label: string;
+  value: string;
+  category: number;
+  post_count: number;
+  antecedent: string;
+}

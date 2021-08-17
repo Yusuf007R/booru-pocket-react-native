@@ -7,10 +7,6 @@ export const Container = styled.View`
   flex-direction: row;
 `;
 
-export const TextContainer = styled.View`
-  margin-left: 20px;
-`;
-
 export const StyledText = styled.Text`
   margin: 5px 0px 5px 0px;
   font-size: 15px;

@@ -2,11 +2,11 @@
 
 import React from 'react';
 import {RefreshHeader} from 'react-native-spring-scrollview';
-import {ActivityIndicator, Animated} from 'react-native';
+import {ActivityIndicator, Animated, View} from 'react-native';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ThemeContext} from 'styled-components/native';
-import {Container, StyledText, TextContainer} from './styles';
+import {Container, StyledText} from './styles';
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
 
 export class RefreshComponent extends RefreshHeader {
@@ -19,10 +19,10 @@ export class RefreshComponent extends RefreshHeader {
     return (
       <Container>
         {this._renderIcon()}
-        <TextContainer>
+        <View>
           <StyledText> {this.getTitle()}</StyledText>
           {this.renderContent()}
-        </TextContainer>
+        </View>
       </Container>
     );
   }

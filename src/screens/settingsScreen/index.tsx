@@ -1,6 +1,6 @@
-import React, {useContext} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {OptionContainer, StyledText} from './styles';
-import {Switch} from 'react-native';
+import {Switch, TouchableHighlight, View} from 'react-native';
 import {
   SettingsActions,
   SettingsContext,
@@ -27,7 +27,10 @@ const SwitchComponent = (props: {
 function SettingsScreen() {
   const {settings, settingsDispatch} = useContext(SettingsContext);
   const themeContext = useContext(ThemeContext);
-
+  const [valueSS, setValueSS] = useState('');
+  const onChangeSS = (value: string) => {
+    setValueSS(value);
+  };
   return (
     <Container>
       <OptionContainer>
@@ -50,12 +53,6 @@ function SettingsScreen() {
       </OptionContainer>
       <OptionContainer>
         <StyledText>Toggle Theme</StyledText>
-        <SwitchComponent
-          theme={themeContext}
-          value={settings.darkTheme}
-          dispatcher={settingsDispatch}
-          payload={{type: 'toggleDarkTheme'}}
-        />
       </OptionContainer>
     </Container>
   );

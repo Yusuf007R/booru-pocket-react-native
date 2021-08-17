@@ -15,6 +15,7 @@ import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {DrawerTypes} from '../../../router';
 import NavBarContainer from '../navBarComponents/navBarContainer';
 import NavbarIcon from '../navBarComponents/NavBarIcon';
+import {AutoCompleteType} from '../../../services/danbooru.types';
 
 type Props = {
   refreshGallery: () => void;
@@ -37,7 +38,7 @@ function Navbar({
   const Danbooru = new DanBooru();
   const {params, paramsDispatch} = paramsObject;
   const input = useRef<TextInput>(null);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<AutoCompleteType[]>([]);
   const [inputText, setInputText] = useState(params.arrayTags.join(' '));
   const [toggleAnimation, setToggleAnimation] = useState(true);
 
@@ -68,7 +69,7 @@ function Navbar({
   };
 
   const memoizedRenderItem = useCallback(
-    ({item}) => (
+    ({item}: {item: AutoCompleteType}) => (
       <TouchableHighlight
         onPress={() => {
           let tagsString = '';
@@ -84,7 +85,7 @@ function Navbar({
           paramsDispatch({type: 'changeTags', payload: tags});
         }}>
         <ItemContainer>
-          <Text>{item.label}</Text>
+          <Text>{item.value}</Text>
         </ItemContainer>
       </TouchableHighlight>
     ),

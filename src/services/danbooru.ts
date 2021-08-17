@@ -1,4 +1,10 @@
-import {authType, Data, Params, UserDanbooruType} from './danbooru.types';
+import {
+  authType,
+  AutoCompleteType,
+  Data,
+  Params,
+  UserDanbooruType,
+} from './danbooru.types';
 import Axios from 'axios';
 import {baseUrl, SafebaseUrl} from '../config/index';
 import {UserType} from '../contexts/userContext/context';
@@ -52,7 +58,7 @@ export class DanBooru {
     }
   };
 
-  autoCompleteRequest = async (query: string) => {
+  autoCompleteRequest = async (query: string): Promise<AutoCompleteType[]> => {
     try {
       const data = await this.request({
         method: 'get',
