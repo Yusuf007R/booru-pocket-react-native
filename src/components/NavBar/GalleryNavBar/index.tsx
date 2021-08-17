@@ -22,6 +22,7 @@ type Props = {
   scrollY: Animated.Value<0>;
   paramsObject: useParamsType;
   type: 'Gallery' | 'Stack';
+  refreshing: React.MutableRefObject<boolean>;
 };
 
 function Navbar({
@@ -30,6 +31,7 @@ function Navbar({
   refreshGallery,
   paramsObject,
   type,
+  refreshing,
 }: Props) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerTypes>>();
   const Danbooru = new DanBooru();
@@ -51,10 +53,14 @@ function Navbar({
   }, [toggleAnimation]);
 
   useEffect(() => {
-    refreshGallery();
+    if (refreshing.current) {
+      refreshing.current = false;
+      refreshGallery();
+    }
   }, [params.arrayTags]);
 
   const refresh = () => {
+    refreshing.current = true;
     input.current?.blur();
     let tags = inputText.split(' ');
     tags = tags.filter(tag => tag !== '');

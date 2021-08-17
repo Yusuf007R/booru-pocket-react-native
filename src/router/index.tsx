@@ -32,11 +32,8 @@ export type StackTypes = {
   Home: undefined;
   Settings: undefined;
   IMG: {
-    data: Data;
-    video: boolean;
-    highQuality: string;
-    lowQuality: string;
-    SourceQuality: string;
+    index: number;
+    data: Data[];
   };
   Account: undefined;
 };

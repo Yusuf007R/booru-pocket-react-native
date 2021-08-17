@@ -1,12 +1,12 @@
-import React, {Fragment, useCallback, useContext, useRef} from 'react';
-import {ActivityIndicator, Dimensions, View} from 'react-native';
+import React, {useCallback, useContext, useRef} from 'react';
+import {useWindowDimensions} from 'react-native';
 import {WaterfallList} from 'react-native-largelist-v3';
 import Animated from 'react-native-reanimated';
-import {ThemeContext} from 'styled-components/native';
+import {RefreshComponent} from '../RefreshHeader';
+
 import {SettingsContext} from '../../contexts/settingsContext/context';
 import {Data} from '../../services/danbooru.types';
 import Item from '../GalleryItem';
-import {LoadingContainer} from './styles';
 
 type Props = {
   refreshData: () => void;
@@ -27,22 +27,20 @@ function Gallery({
 }: Props) {
   const {settings} = useContext(SettingsContext);
   const contentSizeHeight = useRef(0);
-  const theme = useContext(ThemeContext);
+  const {width} = useWindowDimensions();
 
-  const RenderItem = (item: Data) => (
-    <Item data={item} quality={settings.quality} />
+  const RenderItem = (item: Data, index: number) => (
+    <Item data={data} quality={settings.quality} index={index} />
   );
 
-  const memoizedHeader = useCallback(() => {
-    const {width} = Dimensions.get('window');
-    return <View style={{height: headerHeight - 10, width}} />;
-  }, []);
+  const memoizedHeightGetter = useCallback(
+    element => {
+      const diff = element.image_height / element.image_width;
+      return (width / settings.column) * diff;
+    },
+    [width, settings.column],
+  );
 
-  const memoizedHeightGetter = useCallback(element => {
-    const {width} = Dimensions.get('window');
-    const diff = element.image_height / element.image_width;
-    return (width / settings.column) * diff;
-  }, []);
   // @ts-ignore
   const Scroll = ({nativeEvent: {contentOffset}}) => {
     if (contentOffset.y < 0) {
@@ -65,25 +63,18 @@ function Gallery({
   };
 
   return (
-    <Fragment>
-      {data.length ? (
-        <WaterfallList
-          renderHeader={memoizedHeader}
-          data={data}
-          ref={GalleryRef}
-          heightForItem={memoizedHeightGetter}
-          renderItem={RenderItem}
-          numColumns={settings.column}
-          onRefresh={refreshData}
-          onScroll={Scroll}
-        />
-      ) : (
-        <LoadingContainer>
-          <ActivityIndicator size="large" color={theme.main} />
-        </LoadingContainer>
-      )}
-    </Fragment>
+    <WaterfallList
+      style={{paddingTop: headerHeight - 10}}
+      data={data}
+      ref={GalleryRef}
+      heightForItem={memoizedHeightGetter}
+      renderItem={RenderItem}
+      numColumns={settings.column}
+      onRefresh={refreshData}
+      onScroll={Scroll}
+      refreshHeader={RefreshComponent}
+    />
   );
 }
 
-export default Gallery;
+export default React.memo(Gallery);

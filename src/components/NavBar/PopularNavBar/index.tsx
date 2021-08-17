@@ -19,7 +19,7 @@ type Props = {
     }>
   >;
 };
-export type OptionType = 'day' | 'month' | 'week' | null;
+export type OptionType = 'day' | 'month' | 'week';
 
 function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerTypes>>();
@@ -37,6 +37,7 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
 
   const selectOption = (type: OptionType) => {
     setParams(prev => ({...prev, scale: type}));
+    setToggleAnimation(true);
     toggleOptionModal();
   };
 
@@ -110,6 +111,7 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
             name={'list'}
             onPress={() => {
               toggleOptionModal();
+              setToggleAnimation(false);
             }}
             margin={5}
           />

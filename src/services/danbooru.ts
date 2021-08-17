@@ -3,6 +3,7 @@ import Axios from 'axios';
 import {baseUrl, SafebaseUrl} from '../config/index';
 import {UserType} from '../contexts/userContext/context';
 import {OptionType} from '../components/NavBar/PopularNavBar';
+import parseData from '../utils/parseData';
 
 export class DanBooru {
   auth!: authType;
@@ -26,7 +27,10 @@ export class DanBooru {
         auth: this.auth ? this.auth : undefined,
         params: urlParams,
       });
-      return data.data;
+
+      const temp = parseData(data.data);
+
+      return temp;
     } catch (err) {
       throw new Error(err);
     }
@@ -84,7 +88,7 @@ export class DanBooru {
         auth: this.auth ? this.auth : undefined,
         params: params,
       });
-      return data.data;
+      return parseData(data.data);
     } catch (err) {
       throw new Error(err);
     }

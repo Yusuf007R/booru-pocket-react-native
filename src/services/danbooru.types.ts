@@ -1,10 +1,22 @@
-export interface Data {
-  id?: number;
+export type Data = {
+  id: number;
+  image_width: number;
+  image_height: number;
+  file_ext: FileEXT;
+  url: string;
+  highQuality: string;
+  lowQuality: string;
+  sourceQuality: string;
+  video: boolean;
+};
+
+export interface DataApiResponse {
+  id: number;
   created_at: Date;
   uploader_id: number;
   score: number;
   source: string;
-  md5?: string;
+  md5: string;
   last_comment_bumped_at: Date | null;
   rating: Rating;
   image_width: number;
@@ -45,15 +57,16 @@ export interface Data {
   tag_string_copyright: string;
   tag_string_artist: string;
   tag_string_meta: string;
-  file_url?: string;
-  large_file_url?: string;
-  preview_file_url?: string;
+  file_url: string;
+  large_file_url: string;
+  preview_file_url: string;
 }
 
 export enum FileEXT {
   Jpg = 'jpg',
   Mp4 = 'mp4',
   PNG = 'png',
+  WEBM = 'webm',
 }
 
 export enum Rating {

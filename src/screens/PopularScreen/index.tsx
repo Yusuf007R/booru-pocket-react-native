@@ -29,7 +29,7 @@ function PopularScreen({route: {params}}: {route: RouteType}) {
   };
 
   const refreshData = () => {
-    getPopular(popularParams, true);
+    getPopular(popularParams, true, GalleryRef);
   };
 
   useEffect(() => {

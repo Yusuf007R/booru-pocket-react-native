@@ -19,6 +19,7 @@ function GalleryScreen({route: {params}}: {route: RouteType}) {
   const GalleryRef = useRef<WaterfallList<Data>>(null);
   const {data, getData} = useGetImages(paramsObject);
   const headerHeight = useMemo(() => 70 + getStatusBarHeight(), []);
+  const refreshing = useRef(false);
 
   const fetchData = () => {
     getData();
@@ -40,6 +41,7 @@ function GalleryScreen({route: {params}}: {route: RouteType}) {
         refreshGallery={refreshData}
         paramsObject={paramsObject}
         type={params.type}
+        refreshing={refreshing}
       />
       <Gallery
         GalleryRef={GalleryRef}

@@ -15,6 +15,7 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
   const getPopular = (
     popularParams: {dateObject: Date; scale: OptionType},
     refresh?: boolean,
+    ref?: React.RefObject<WaterfallList<Data>>,
   ) => {
     let pageNum = params.page;
     if (refresh) {
@@ -22,7 +23,6 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
       pageNum = 1;
       paramsDispatch({type: 'resetPage'});
     }
-
     const date = `${popularParams.dateObject.getFullYear()}-${
       popularParams.dateObject.getMonth() + 1
     }-${popularParams.dateObject.getDate()}`;
@@ -37,10 +37,12 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
       settings.safe,
     )
       .then(result => {
-        const FilteredResult = result.filter(
-          element => element.large_file_url || element.preview_file_url,
-        );
-        setData(prevData => [...prevData, ...FilteredResult]);
+        if (refresh) {
+          setData([...result]);
+          ref?.current?.endRefresh();
+          return paramsDispatch({type: 'incrementPage'});
+        }
+        setData(prevData => [...prevData, ...result]);
         paramsDispatch({type: 'incrementPage'});
       })
       .catch(err => setError(err));
@@ -59,23 +61,18 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
     }
     const requestParams = {limit: settings.limit, page: pageNum, tags: ''};
     if (arrayTagsCopy.length) {
-      //! the second copy may no be needed
-      const tagsCopy = [...arrayTagsCopy];
-      const tags = tagsCopy.join(' ');
+      const tags = arrayTagsCopy.join(' ');
       requestParams.tags = tags;
     }
 
     Danbooru.fetchImage(requestParams, settings.safe)
       .then(result => {
-        const FilteredResult = result.filter(
-          element => element.large_file_url || element.preview_file_url,
-        );
         if (refresh) {
-          setData([...FilteredResult]);
+          setData([...result]);
           ref?.current?.endRefresh();
           return paramsDispatch({type: 'incrementPage'});
         }
-        setData(prevData => [...prevData, ...FilteredResult]);
+        setData(prevData => [...prevData, ...result]);
         paramsDispatch({type: 'incrementPage'});
       })
       .catch(err => setError(err));

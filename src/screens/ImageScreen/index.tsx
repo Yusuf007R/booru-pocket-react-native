@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {ActivityIndicator} from 'react-native';
 import {StyledImg} from './styles';
 import {Container} from '../../components/Containers';
@@ -16,9 +16,10 @@ type Props = {
   route: RouteProp<StackTypes, 'IMG'>;
 };
 
-export default function ImageScreen(props: Props) {
+function ImageScreen(props: Props) {
   const theme = useContext(ThemeContext);
-  const {video, highQuality} = props.route.params;
+  const {data, index} = props.route.params;
+  const elem = useMemo(() => data[index], [index]);
 
   const memoizedLoading = useCallback(
     () => <ActivityIndicator size="large" color={theme.main} />,
@@ -34,22 +35,24 @@ export default function ImageScreen(props: Props) {
 
   return (
     <Container>
-      {video ? (
+      {elem.video ? (
         <VideoPlayer
           navigator={props.navigation}
           source={{
-            uri: highQuality,
+            uri: elem.highQuality,
           }}
         />
       ) : (
         <ImageViewer
           renderIndicator={() => <></>}
-          maxOverflow={0}
+          // maxOverflow={0}
           loadingRender={memoizedLoading}
-          imageUrls={[{url: highQuality}]}
+          imageUrls={data}
           renderImage={memoizedImage}
+          index={index}
         />
       )}
     </Container>
   );
 }
+export default React.memo(ImageScreen);
