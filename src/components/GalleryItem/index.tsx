@@ -1,10 +1,9 @@
-import React, {useMemo} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import React, {Fragment} from 'react';
 import {StyledImg, StyledTouchableOpacity} from './styles';
-
 import FastImage from 'react-native-fast-image';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {Data} from '../../services/danbooru.types';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {StackTypes} from '../../router';
 
 interface Props {
@@ -15,23 +14,25 @@ interface Props {
 
 function Item({data, quality, index}: Props) {
   const navigation = useNavigation<StackNavigationProp<StackTypes>>();
-  const elem = useMemo(() => data[index], [index]);
 
   return (
-    <StyledTouchableOpacity
-      onPress={() => {
-        navigation.push('IMG', {
-          data: data,
-          index: index,
-        });
-      }}>
-      <StyledImg
-        source={{
-          uri: quality ? elem.highQuality : elem.lowQuality,
-        }}
-        resizeMode={FastImage.resizeMode.stretch}
-      />
-    </StyledTouchableOpacity>
+    <Fragment>
+      {/* <Text style={{color: 'white', marginLeft: 20}}>{right}</Text> */}
+      <StyledTouchableOpacity
+        onPress={() => {
+          navigation.push('IMG', {
+            data: data,
+            index: index,
+          });
+        }}>
+        <StyledImg
+          source={{
+            uri: quality ? data[index].highQuality : data[index].lowQuality,
+          }}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      </StyledTouchableOpacity>
+    </Fragment>
   );
 }
 export default React.memo(Item);

@@ -1,5 +1,4 @@
 import {useContext, useState} from 'react';
-import {WaterfallList} from 'react-native-largelist-v3';
 import {OptionType} from '../components/NavBar/PopularNavBar';
 import {SettingsContext} from '../contexts/settingsContext/context';
 import {DanBooru} from '../services/danbooru';
@@ -15,7 +14,6 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
   const getPopular = (
     popularParams: {dateObject: Date; scale: OptionType},
     refresh?: boolean,
-    ref?: React.RefObject<WaterfallList<Data>>,
   ) => {
     let pageNum = params.page;
     if (refresh) {
@@ -39,20 +37,15 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
       .then(result => {
         if (refresh) {
           setData([...result]);
-          ref?.current?.endRefresh();
           return paramsDispatch({type: 'incrementPage'});
         }
-        setData(prevData => [...prevData, ...result]);
+        setData(prev => prev.concat(result));
         paramsDispatch({type: 'incrementPage'});
       })
       .catch(err => setError(err));
   };
 
-  const getData = (
-    refresh?: boolean,
-    ref?: React.RefObject<WaterfallList<Data>>,
-  ) => {
-    const arrayTagsCopy = [...params.arrayTags];
+  const getData = (refresh?: boolean) => {
     let pageNum = params.page;
     if (refresh) {
       setData([]);
@@ -60,8 +53,8 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
       paramsDispatch({type: 'resetPage'});
     }
     const requestParams = {limit: settings.limit, page: pageNum, tags: ''};
-    if (arrayTagsCopy.length) {
-      const tags = arrayTagsCopy.join(' ');
+    if (params.arrayTags.length) {
+      const tags = params.arrayTags.join(' ');
       requestParams.tags = tags;
     }
 
@@ -69,10 +62,9 @@ export default function useGetImages({params, paramsDispatch}: useParamsType) {
       .then(result => {
         if (refresh) {
           setData([...result]);
-          ref?.current?.endRefresh();
           return paramsDispatch({type: 'incrementPage'});
         }
-        setData(prevData => [...prevData, ...result]);
+        setData(prev => prev.concat(result));
         paramsDispatch({type: 'incrementPage'});
       })
       .catch(err => setError(err));

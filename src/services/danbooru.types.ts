@@ -1,9 +1,8 @@
 export type Data = {
   id: number;
-  image_width: number;
-  image_height: number;
+  width: number;
+  height: number;
   file_ext: FileEXT;
-  url: string;
   highQuality: string;
   lowQuality: string;
   sourceQuality: string;

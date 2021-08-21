@@ -1,78 +1,85 @@
-import React, {useCallback, useContext, useRef} from 'react';
-import {useWindowDimensions} from 'react-native';
-import {WaterfallList} from 'react-native-largelist-v3';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {useWindowDimensions, RefreshControl} from 'react-native';
 import Animated from 'react-native-reanimated';
-import {RefreshComponent} from '../RefreshHeader';
-
 import {SettingsContext} from '../../contexts/settingsContext/context';
 import {Data} from '../../services/danbooru.types';
 import Item from '../GalleryItem';
+import BigList from 'react-native-big-list';
 
 type Props = {
   refreshData: () => void;
   fetchData: () => void;
   headerHeight: number;
   scrollY: Animated.Value<0>;
-  GalleryRef: React.RefObject<WaterfallList<Data>>;
   data: Data[];
 };
 
-function Gallery({
-  refreshData,
-  fetchData,
-  headerHeight,
-  scrollY,
-  GalleryRef,
-  data,
-}: Props) {
+function Gallery({refreshData, fetchData, headerHeight, scrollY, data}: Props) {
   const {settings} = useContext(SettingsContext);
-  const contentSizeHeight = useRef(0);
   const {width} = useWindowDimensions();
-
-  const RenderItem = (item: Data, index: number) => (
-    <Item data={data} quality={settings.quality} index={index} />
-  );
-
-  const memoizedHeightGetter = useCallback(
-    element => {
-      const diff = element.image_height / element.image_width;
-      return (width / settings.column) * diff;
-    },
-    [width, settings.column],
-  );
+  const contentSizeHeight = useRef(0);
+  const [refreshing, setRefreshing] = useState(false);
 
   // @ts-ignore
-  const Scroll = ({nativeEvent: {contentOffset}}) => {
-    if (contentOffset.y < 0) {
+  const onScroll = ({nativeEvent}) => {
+    if (nativeEvent.contentOffset.y < 0) {
       scrollY.setValue(0);
     } else {
-      scrollY.setValue(contentOffset.y);
+      // @ts-ignore
+      scrollY.setValue(nativeEvent.contentOffset.y);
     }
-    if (GalleryRef.current) {
-      const height: number =
-        // @ts-ignore
-        GalleryRef.current._scrollView.current._contentHeight;
-      if (height - contentOffset.y < 3500) {
-        if (contentSizeHeight.current === height) {
-          return;
-        }
-        contentSizeHeight.current = height;
-        fetchData();
-      }
+    const heightCon: number = nativeEvent.contentSize.height;
+
+    if (contentSizeHeight.current === heightCon) {
+      return;
+    }
+    if (heightCon - nativeEvent.contentOffset.y < 3500) {
+      contentSizeHeight.current = heightCon;
+      fetchData();
     }
   };
 
+  useEffect(() => {
+    if (refreshing) {
+      setRefreshing(false);
+    }
+  }, [data]);
+
+  const RenderItem = useCallback(
+    ({index}: {index: number}) => {
+      return <Item quality={settings.quality} index={index} data={data} />;
+    },
+    [settings.quality, data],
+  );
+
   return (
-    <WaterfallList
-      style={{paddingTop: headerHeight - 10}}
+    <BigList
       data={data}
-      ref={GalleryRef}
-      heightForItem={memoizedHeightGetter}
-      renderItem={RenderItem}
       numColumns={settings.column}
-      onRefresh={refreshData}
-      onScroll={Scroll}
-      refreshHeader={RefreshComponent}
+      horizontal={false}
+      inverted={false}
+      stickySectionHeadersEnabled={true}
+      renderItem={RenderItem}
+      itemHeight={(width + width / 2) / settings.column}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          progressViewOffset={headerHeight}
+          onRefresh={() => {
+            setRefreshing(true);
+            refreshData();
+          }}
+        />
+      }
+      renderHeader={() => <></>}
+      headerHeight={headerHeight - 10}
+      onScroll={onScroll}
     />
   );
 }

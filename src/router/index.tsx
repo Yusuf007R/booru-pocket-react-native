@@ -16,7 +16,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import BottomBarIcon from '../components/Navigation/BottomBarIcon';
 import {ScrollValueContext} from '../../App';
-import Animated from 'react-native-reanimated';
+import Animated, {interpolateNode} from 'react-native-reanimated';
 import BottomBar from '../components/Navigation/BottomBar';
 import {Data} from '../services/danbooru.types';
 import WIP from '../screens/WIP';
@@ -68,7 +68,7 @@ const BottomBarNavigator = () => {
   const themeContext = useContext(ThemeContext);
   const scrollY = useContext(ScrollValueContext);
   const diffClamp = Animated.diffClamp(scrollY, 0, 70);
-  const translateY = Animated.interpolate(diffClamp, {
+  const translateY = interpolateNode(diffClamp, {
     inputRange: [0, 70],
     outputRange: [0, 70],
   });

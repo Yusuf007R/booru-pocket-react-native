@@ -1,11 +1,9 @@
-import React, {useEffect, useRef, useMemo, useContext} from 'react';
+import React, {useEffect, useMemo, useContext} from 'react';
 import useGetImages from '../../hooks/useGetImages';
 import Navbar, {OptionType} from '../../components/NavBar/PopularNavBar';
-import {WaterfallList} from 'react-native-largelist-v3';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {Container} from '../../components/Containers';
 import {ScrollValueContext} from '../../../App';
-import {Data} from '../../services/danbooru.types';
 import useParams from '../../hooks/useParams';
 import {RouteProp} from '@react-navigation/native';
 import {DrawerTypes} from '../../router';
@@ -17,7 +15,6 @@ type RouteType = RouteProp<DrawerTypes, 'HomeGallery'>;
 function PopularScreen({route: {params}}: {route: RouteType}) {
   const paramsObject = useParams(params);
   const scrollY = useContext(ScrollValueContext);
-  const GalleryRef = useRef<WaterfallList<Data>>(null);
   const {data, getPopular} = useGetImages(paramsObject);
   const headerHeight = useMemo(() => 70 + getStatusBarHeight(), []);
   const [popularParams, setPopularParams] = useState<{
@@ -29,7 +26,7 @@ function PopularScreen({route: {params}}: {route: RouteType}) {
   };
 
   const refreshData = () => {
-    getPopular(popularParams, true, GalleryRef);
+    getPopular(popularParams, true);
   };
 
   useEffect(() => {
@@ -48,7 +45,6 @@ function PopularScreen({route: {params}}: {route: RouteType}) {
         setParams={setPopularParams}
       />
       <Gallery
-        GalleryRef={GalleryRef}
         scrollY={scrollY}
         fetchData={fetchData}
         refreshData={refreshData}

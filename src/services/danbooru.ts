@@ -34,9 +34,7 @@ export class DanBooru {
         params: urlParams,
       });
 
-      const temp = parseData(data.data);
-
-      return temp;
+      return parseData(data.data);
     } catch (err) {
       throw new Error(err);
     }
@@ -70,7 +68,6 @@ export class DanBooru {
           limit: 5,
         },
       });
-
       return data.data;
     } catch (err) {
       throw new Error(err);

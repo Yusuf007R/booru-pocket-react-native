@@ -1,5 +1,5 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, {interpolateNode} from 'react-native-reanimated';
 import {NavContainer, StyledAnimated} from './styles';
 
 type Props = {
@@ -16,7 +16,7 @@ export default function NavBarContainer({
   scrollY,
 }: Props) {
   const diffClamp = Animated.diffClamp(scrollY, 0, headerHeight);
-  const translateY = Animated.interpolate(diffClamp, {
+  const translateY = interpolateNode(diffClamp, {
     inputRange: [0, headerHeight],
     outputRange: [0, -headerHeight],
   });
