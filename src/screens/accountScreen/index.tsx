@@ -63,7 +63,7 @@ function AccountScreen({navigation}: Props) {
               color={themeContext.iconColor}
             />
             <Label size={28}>{user.username}</Label>
-            <Label size={16}>ID: 794231</Label>
+            <Label size={16}>{user.id}</Label>
           </Head>
           <Body>
             <ProfileItemContainer>
@@ -73,7 +73,7 @@ function AccountScreen({navigation}: Props) {
                 onPress={() => {
                   navigation.navigate('Gallery', {
                     tags: [`user:${user.username}`],
-                    drawer: false,
+                    type: 'Stack',
                   });
                 }}
               />
@@ -83,7 +83,7 @@ function AccountScreen({navigation}: Props) {
                 onPress={() => {
                   navigation.navigate('Gallery', {
                     tags: [`fav:${user.username}`],
-                    drawer: false,
+                    type: 'Stack',
                   });
                 }}
               />
@@ -92,8 +92,8 @@ function AccountScreen({navigation}: Props) {
                 text="Saved Posts"
                 onPress={() => {
                   navigation.navigate('Gallery', {
-                    tags: ['user:Yusuf-chan'],
-                    drawer: false,
+                    tags: [`user:${user.username}`],
+                    type: 'Stack',
                   });
                 }}
               />

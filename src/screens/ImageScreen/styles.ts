@@ -1,6 +1,5 @@
 import styled from 'styled-components/native';
 import FastImage from 'react-native-fast-image';
-import ImageZoom from 'react-native-image-pan-zoom';
 
 export const StyledImg = styled(FastImage)`
   flex: 1;
@@ -8,6 +7,7 @@ export const StyledImg = styled(FastImage)`
   height: 100%;
 `;
 
-export const StyledImgZoom = styled(ImageZoom)`
+export const ImageScreenContainer = styled.View`
   flex: 1;
+  background-color: black;
 `;

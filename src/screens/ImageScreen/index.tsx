@@ -1,58 +1,64 @@
-import React, {useCallback, useMemo} from 'react';
-import {ActivityIndicator} from 'react-native';
-import {StyledImg} from './styles';
-import {Container} from '../../components/Containers';
-import VideoPlayer from 'react-native-video-controls';
-import FastImage from 'react-native-fast-image';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import React, {useCallback, useState} from 'react';
 import {StackTypes} from '../../router';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {useContext} from 'react';
-import {ThemeContext} from 'styled-components/native';
+import FastImage from 'react-native-fast-image';
+import {ImageScreenContainer, StyledImg} from './styles';
+import {Data} from '../../services/danbooru.types';
+import Gallery from 'react-native-awesome-gallery';
+
+type ItemTypes = {
+  item: Data;
+  setImageDimensions: (dimentions: Dimensions) => void;
+};
+
+type Dimensions = {
+  height: number;
+  width: number;
+};
 
 type Props = {
   navigation: StackNavigationProp<StackTypes>;
   route: RouteProp<StackTypes, 'IMG'>;
 };
 
-function ImageScreen(props: Props) {
-  const theme = useContext(ThemeContext);
-  const {data, index} = props.route.params;
-  const elem = useMemo(() => data[index], [index]);
+function ImageScreen({route}: Props) {
+  const {data, index} = route.params;
+  const [currentImg, setCurrentImg] = useState(0);
 
-  const memoizedLoading = useCallback(
-    () => <ActivityIndicator size="large" color={theme.main} />,
-    [],
-  );
+  const renderItem = useCallback(({item, setImageDimensions}: ItemTypes) => {
+    return (
+      <StyledImg
+        onLoad={e => {
+          const {height: h, width: w} = e.nativeEvent;
+          setImageDimensions({height: h, width: w});
+        }}
+        resizeMode={FastImage.resizeMode.center}
+        source={{uri: item.highQuality}}
+      />
+    );
+  }, []);
 
-  const memoizedImage = useCallback(
-    ({source: {uri}}) => (
-      <StyledImg resizeMode={FastImage.resizeMode.center} source={{uri}} />
-    ),
+  const keyExtractor = useCallback(
+    (item: Data, i: number) => `${i}${item.id}`,
     [],
   );
 
   return (
-    <Container>
-      {elem.video ? (
-        <VideoPlayer
-          navigator={props.navigation}
-          source={{
-            uri: elem.highQuality,
-          }}
-        />
-      ) : (
-        <ImageViewer
-          renderIndicator={() => <></>}
-          // maxOverflow={0}
-          loadingRender={memoizedLoading}
-          imageUrls={data}
-          renderImage={memoizedImage}
-          index={index}
-        />
-      )}
-    </Container>
+    <ImageScreenContainer>
+      <Gallery
+        numToRender={3}
+        keyExtractor={keyExtractor}
+        emptySpaceWidth={0}
+        initialIndex={index}
+        renderItem={renderItem}
+        data={data}
+        disableVerticalSwipe={true}
+        onIndexChange={i => {
+          setCurrentImg(i);
+        }}
+      />
+    </ImageScreenContainer>
   );
 }
-export default React.memo(ImageScreen);
+export default ImageScreen;
