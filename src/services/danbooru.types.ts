@@ -66,6 +66,8 @@ export enum FileEXT {
   Mp4 = 'mp4',
   PNG = 'png',
   WEBM = 'webm',
+  ZIP = 'zip',
+  GIF = 'gif',
 }
 
 export enum Rating {
