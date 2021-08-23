@@ -29,8 +29,6 @@
     "react-native-encrypted-storage": "^4.0.2",
     "react-native-fast-image": "^8.3.4",
     "react-native-gesture-handler": "^1.10.3",
-    "react-native-image-pan-zoom": "^2.1.12",
-    "react-native-image-viewing": "^0.2.0",
     "react-native-modal-datetime-picker": "^10.2.0",
     "react-native-reanimated": "^2.2.0",
     "react-native-safe-area-context": "^3.1.9",
@@ -38,7 +36,6 @@
     "react-native-status-bar-height": "^2.6.0",
     "react-native-vector-icons": "^8.1.0",
     "react-native-video": "^5.1.0-alpha8",
-    "react-native-video-controls": "https://github.com/Yusuf007R/react-native-video-controls",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {

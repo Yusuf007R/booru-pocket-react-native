@@ -1,18 +1,19 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState, useRef} from 'react';
 import {StackTypes} from '../../router';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import FastImage from 'react-native-fast-image';
-import {ImageScreenContainer, StyledImg} from './styles';
+import {ImageScreenContainer} from './styles';
 import {Data} from '../../services/danbooru.types';
-import Gallery from 'react-native-awesome-gallery';
+import Gallery, {GalleryRef} from 'react-native-awesome-gallery';
+import ImageItem from '../../components/ImageItem';
 
-type ItemTypes = {
+export type ItemTypes = {
   item: Data;
   setImageDimensions: (dimentions: Dimensions) => void;
+  index: number;
 };
 
-type Dimensions = {
+export type Dimensions = {
   height: number;
   width: number;
 };
@@ -25,30 +26,46 @@ type Props = {
 function ImageScreen({route}: Props) {
   const {data, index} = route.params;
   const [currentImg, setCurrentImg] = useState(0);
+  const [currentIsVideo, setCurrentIsVideo] = useState(false);
+  const galleryRef = useRef<GalleryRef>(null);
 
-  const renderItem = useCallback(({item, setImageDimensions}: ItemTypes) => {
-    return (
-      <StyledImg
-        onLoad={e => {
-          const {height: h, width: w} = e.nativeEvent;
-          setImageDimensions({height: h, width: w});
-        }}
-        resizeMode={FastImage.resizeMode.center}
-        source={{uri: item.highQuality}}
-      />
-    );
-  }, []);
+  useEffect(() => {
+    if (!data[currentImg].video && currentIsVideo) {
+      setCurrentIsVideo(false);
+    }
+    if (data[currentImg].video && !currentIsVideo) {
+      setCurrentIsVideo(true);
+    }
+  }, [currentImg]);
+
+  const renderItem = useCallback(
+    ({item, setImageDimensions, index: i}: ItemTypes) => {
+      return (
+        <ImageItem
+          currentImg={currentImg}
+          item={item}
+          setImageDimensions={setImageDimensions}
+          index={i}
+        />
+      );
+    },
+    [currentImg],
+  );
 
   const keyExtractor = useCallback(
-    (item: Data, i: number) => `${i}${item.id}`,
+    (item: Data, i: number) => `${i}${item.id}:v`,
     [],
   );
 
   return (
     <ImageScreenContainer>
       <Gallery
-        numToRender={3}
+        key={`${currentIsVideo}`}
+        disablePinchToZoom={currentIsVideo}
+        numToRender={currentIsVideo ? 1 : 3}
+        doubleTapScale={currentIsVideo ? 1 : 3}
         keyExtractor={keyExtractor}
+        ref={galleryRef}
         emptySpaceWidth={0}
         initialIndex={index}
         renderItem={renderItem}
