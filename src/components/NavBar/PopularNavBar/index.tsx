@@ -8,7 +8,7 @@ import NavBarContainer from '../navBarComponents/navBarContainer';
 import NavbarIcon from '../navBarComponents/NavBarIcon';
 import Dropdown from '../../Dropdown';
 import {RowContainer, StyledText} from './styles';
-import ModalComponent from '../../Modal';
+import AbsoluteModal from '../../AbsoluteModal';
 import {NativeTouchEvent} from 'react-native';
 
 type Props = {
@@ -107,7 +107,7 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
           />
         </RowContainer>
       </NavBarContainer>
-      <ModalComponent
+      <AbsoluteModal
         offset={{top: -10}}
         backdropColor="transparent"
         isVisible={isOptionModalVisible}
@@ -121,7 +121,7 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
           icons={['today', 'calendar-sharp', 'calendar-outline']}
           onPress={selectOption}
         />
-      </ModalComponent>
+      </AbsoluteModal>
     </Fragment>
   );
 }

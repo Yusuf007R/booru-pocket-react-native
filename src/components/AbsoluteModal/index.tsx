@@ -13,7 +13,7 @@ type Props = {
   offset: {top?: number; left?: number};
 };
 
-export default function ModalComponent({
+export default function AbsoluteModal({
   toggleModal,
   children,
   isVisible,
