@@ -5,13 +5,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {useWindowDimensions, RefreshControl} from 'react-native';
+import {RefreshControl} from 'react-native';
 import Animated from 'react-native-reanimated';
 import {SettingsContext} from '../../contexts/settingsContext/context';
 import {Data} from '../../services/danbooru.types';
 import Item from '../GalleryItem';
 import BigList from 'react-native-big-list';
 import {ThemeContext} from 'styled-components/native';
+import useDimentions from '../../hooks/useDimentions';
 
 type Props = {
   refreshData: () => void;
@@ -23,7 +24,7 @@ type Props = {
 
 function Gallery({refreshData, fetchData, headerHeight, scrollY, data}: Props) {
   const {settings} = useContext(SettingsContext);
-  const {width} = useWindowDimensions();
+  const {width} = useDimentions();
   const contentSizeHeight = useRef(0);
   const [refreshing, setRefreshing] = useState(false);
   const theme = useContext(ThemeContext);

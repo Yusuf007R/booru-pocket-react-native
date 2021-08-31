@@ -1,10 +1,11 @@
 import React from 'react';
+import {GestureResponderEvent} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyledTouchable} from './styles';
 
 type Props = {
   name: string;
-  onPress: () => void;
+  onPress: (e?: GestureResponderEvent) => void;
   margin: number;
   size: number;
 };

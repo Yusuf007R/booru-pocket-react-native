@@ -6,8 +6,10 @@ import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {DrawerTypes} from '../../../router';
 import NavBarContainer from '../navBarComponents/navBarContainer';
 import NavbarIcon from '../navBarComponents/NavBarIcon';
-import {OptionModal, RowContainer, StyledText} from './styles';
-import PopularIcon from '../navBarComponents/PopularIcon';
+import Dropdown from '../../Dropdown';
+import {RowContainer, StyledText} from './styles';
+import AbsoluteModal from '../../AbsoluteModal';
+import {NativeTouchEvent} from 'react-native';
 
 type Props = {
   headerHeight: number;
@@ -25,20 +27,22 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerTypes>>();
   const [toggleAnimation, setToggleAnimation] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isOptionModalVisible, setisOptionModalVisible] = useState(false);
-
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
+  const [position, setPosition] = useState<NativeTouchEvent>();
   const toggleDatePicker = () => {
     setDatePickerVisibility(prev => !prev);
   };
-
-  const toggleOptionModal = () => {
-    setisOptionModalVisible(prev => !prev);
+  const openOptionModal = () => {
+    setIsOptionModalVisible(true);
+  };
+  const closeOptionModal = () => {
+    setIsOptionModalVisible(false);
   };
 
   const selectOption = (type: OptionType) => {
     setParams(prev => ({...prev, scale: type}));
     setToggleAnimation(true);
-    toggleOptionModal();
+    closeOptionModal();
   };
 
   useEffect(() => {
@@ -62,25 +66,7 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
           setToggleAnimation(true);
         }}
       />
-      {isOptionModalVisible && (
-        <OptionModal>
-          <PopularIcon
-            name={'today'}
-            optionType={'day'}
-            onPress={selectOption}
-          />
-          <PopularIcon
-            name={'calendar-outline'}
-            optionType={'week'}
-            onPress={selectOption}
-          />
-          <PopularIcon
-            name={'calendar-sharp'}
-            optionType={'month'}
-            onPress={selectOption}
-          />
-        </OptionModal>
-      )}
+
       <NavBarContainer
         toggleAnimation={toggleAnimation}
         scrollY={scrollY}
@@ -109,14 +95,33 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
           <NavbarIcon
             size={23}
             name={'list'}
-            onPress={() => {
-              toggleOptionModal();
+            onPress={e => {
+              if (e) {
+                const {nativeEvent} = e;
+                setPosition(nativeEvent);
+              }
+              openOptionModal();
               setToggleAnimation(false);
             }}
             margin={5}
           />
         </RowContainer>
       </NavBarContainer>
+      <AbsoluteModal
+        offset={{top: -10}}
+        backdropColor="transparent"
+        isVisible={isOptionModalVisible}
+        toggleModal={() => {
+          closeOptionModal();
+          setToggleAnimation(true);
+        }}
+        position={position}>
+        <Dropdown
+          options={['day', 'week', 'month']}
+          icons={['today', 'calendar-sharp', 'calendar-outline']}
+          onPress={selectOption}
+        />
+      </AbsoluteModal>
     </Fragment>
   );
 }

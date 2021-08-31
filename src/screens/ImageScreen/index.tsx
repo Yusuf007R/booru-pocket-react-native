@@ -6,6 +6,7 @@ import {ImageScreenContainer} from './styles';
 import {Data} from '../../services/danbooru.types';
 import Gallery, {GalleryRef} from 'react-native-awesome-gallery';
 import ImageItem from '../../components/ImageItem';
+import useDimentions from '../../hooks/useDimentions';
 
 export type ItemTypes = {
   item: Data;
@@ -28,6 +29,7 @@ function ImageScreen({route}: Props) {
   const [currentImg, setCurrentImg] = useState(0);
   const [currentIsVideo, setCurrentIsVideo] = useState(false);
   const galleryRef = useRef<GalleryRef>(null);
+  const {width, height} = useDimentions();
 
   useEffect(() => {
     if (!data[currentImg].video && currentIsVideo) {
@@ -70,6 +72,7 @@ function ImageScreen({route}: Props) {
         initialIndex={index}
         renderItem={renderItem}
         data={data}
+        containerDimensions={{width, height}}
         disableVerticalSwipe={true}
         onIndexChange={i => {
           setCurrentImg(i);
