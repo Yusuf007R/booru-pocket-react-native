@@ -27,20 +27,22 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
   const navigation = useNavigation<DrawerNavigationProp<DrawerTypes>>();
   const [toggleAnimation, setToggleAnimation] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isOptionModalVisible, setisOptionModalVisible] = useState(false);
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
   const [position, setPosition] = useState<NativeTouchEvent>();
   const toggleDatePicker = () => {
     setDatePickerVisibility(prev => !prev);
   };
-
-  const toggleOptionModal = () => {
-    setisOptionModalVisible(prev => !prev);
+  const openOptionModal = () => {
+    setIsOptionModalVisible(true);
+  };
+  const closeOptionModal = () => {
+    setIsOptionModalVisible(false);
   };
 
   const selectOption = (type: OptionType) => {
     setParams(prev => ({...prev, scale: type}));
     setToggleAnimation(true);
-    toggleOptionModal();
+    closeOptionModal();
   };
 
   useEffect(() => {
@@ -98,7 +100,7 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
                 const {nativeEvent} = e;
                 setPosition(nativeEvent);
               }
-              toggleOptionModal();
+              openOptionModal();
               setToggleAnimation(false);
             }}
             margin={5}
@@ -106,10 +108,11 @@ function PopularNavBar({headerHeight, scrollY, setParams}: Props) {
         </RowContainer>
       </NavBarContainer>
       <ModalComponent
+        offset={{top: -10}}
         backdropColor="transparent"
         isVisible={isOptionModalVisible}
         toggleModal={() => {
-          toggleOptionModal();
+          closeOptionModal();
           setToggleAnimation(true);
         }}
         position={position}>
