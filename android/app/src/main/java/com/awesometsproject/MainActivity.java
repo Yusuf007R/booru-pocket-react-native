@@ -1,4 +1,4 @@
-package com.awesometsproject;
+package com.boorupocket;
 
 import com.facebook.react.ReactActivity;
 import android.content.res.Configuration;
